@@ -1,4 +1,4 @@
-package staysplit.hotel_reservation.likes.domain.entity;
+package staysplit.hotel_reservation.likeList.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
