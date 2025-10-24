@@ -54,14 +54,6 @@ public class HotelController {
         return Response.success(response);
     }
 
-    @GetMapping("/search")
-    public Response<Page<GetHotelListResponse>> searchHotels(@ModelAttribute HotelSearchRequest request,
-                                                             @PageableDefault(size = 10)
-                                                             Pageable pageable) {
-        Page<GetHotelListResponse> result = hotelService.searchHotels(request, pageable);
-        return Response.success(result);
-    }
-
     //호텔 삭제
     @DeleteMapping("/{hotelId}")
     public Response<DeleteHotelResponse> deleteHotel(@PathVariable Integer hotelId, Authentication authentication){
