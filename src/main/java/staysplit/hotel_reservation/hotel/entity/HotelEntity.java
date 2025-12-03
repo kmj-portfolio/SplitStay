@@ -30,11 +30,11 @@ public class HotelEntity {
     @Column(nullable = false)
     private String address;
 
-    @Column(nullable = false, precision = 17, scale = 14)
-    private BigDecimal longitude;
+    @Column(nullable = false)
+    private Double longitude;
 
-    @Column(nullable = false, precision = 17, scale = 14)
-    private BigDecimal latitude;
+    @Column(nullable = false)
+    private Double latitude;
 
     private String description;
 
