@@ -69,8 +69,11 @@ server:
 file:
   dir: "C:/Users/...사진 저장할 주소"
 
+file:
+  dir: "C:/Users/...사진 저장할 주소"
+
 app:
-  base-url: https://localhost:8443
+  base-url: https://localhost:8080
 
   logging:
     level:
