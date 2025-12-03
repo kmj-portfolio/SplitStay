@@ -11,6 +11,8 @@ import staysplit.hotel_reservation.common.entity.Response;
 import staysplit.hotel_reservation.hotel.dto.request.*;
 import staysplit.hotel_reservation.hotel.dto.response.*;
 import staysplit.hotel_reservation.hotel.service.HotelService;
+import staysplit.hotel_reservation.hotelSearch.dto.request.HotelSearchCondition;
+import staysplit.hotel_reservation.hotelSearch.service.HotelSearchService;
 import staysplit.hotel_reservation.room.dto.response.RoomInfoResponse;
 import staysplit.hotel_reservation.room.service.RoomService;
 
@@ -21,6 +23,7 @@ public class HotelController {
 
     private final HotelService hotelService;
     private final RoomService roomService;
+    private final HotelSearchService hotelSearchService;
 
     //호텔 생성
     @PostMapping("/")
@@ -69,5 +72,12 @@ public class HotelController {
                                                                   Pageable pageable) {
         Page<RoomInfoResponse> rooms = roomService.findAllRoomsByHotel(hotelId, pageable);
         return Response.success(rooms);
+    }
+
+    // 호텔 검색
+    @GetMapping("/search")
+    public Response<Page<GetHotelListResponse>> searchHotels(@RequestBody HotelSearchCondition condition, Pageable pageable) {
+        Page<GetHotelListResponse> response = hotelSearchService.searchHotels(condition, pageable);
+        return Response.success(response);
     }
 }
