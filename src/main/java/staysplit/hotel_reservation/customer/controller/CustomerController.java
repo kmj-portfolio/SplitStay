@@ -11,7 +11,7 @@ import staysplit.hotel_reservation.common.exception.ErrorCode;
 import staysplit.hotel_reservation.common.oauth.dto.OauthSignupRequest;
 import staysplit.hotel_reservation.common.oauth.dto.RedirectDto;
 import staysplit.hotel_reservation.common.entity.Response;
-import staysplit.hotel_reservation.common.oauth.service.OAuthService;
+//import staysplit.hotel_reservation.common.oauth.service.OAuthService;
 import staysplit.hotel_reservation.customer.domain.dto.request.NicknameChangeRequest;
 import staysplit.hotel_reservation.customer.domain.dto.request.CustomerSignupRequest;
 import staysplit.hotel_reservation.customer.domain.dto.response.CustomerDetailsResponse;
@@ -25,12 +25,12 @@ import java.io.IOException;
 public class CustomerController {
 
     private final CustomerService customerService;
-    private final OAuthService oAuthService;
+    //private final OAuthService oAuthService;
 
     @Value("${jwt.expiration}")
     private int jwtExpirationInSeconds;
-    @Value("${spring.security.oauth2.client.registration.google.callback-uri}")
-    private String callback_uri;
+//    @Value("${spring.security.oauth2.client.registration.google.callback-uri}")
+//    private String callback_uri;
 
     // 일반 회원가입
     @PostMapping("/sign-up")
@@ -74,7 +74,7 @@ public class CustomerController {
         return Response.success("계정이 삭제되었습니다.");
     }
 
-
+/*
     @PostMapping("/google/login")
     public Response<?> googleLogin( @RequestBody RedirectDto redirectDto, HttpServletResponse response) {
         try {
@@ -106,12 +106,12 @@ public class CustomerController {
         String redirectUrl = callback_uri+code;
         response.sendRedirect(redirectUrl);
     }
-
+/*
     //  Oauth 추가 정보 입력 후 회원가입
     @PostMapping("/oauth/signup")
     public Response<CustomerDetailsResponse> oauthSignup(@RequestBody OauthSignupRequest request) {
         CustomerDetailsResponse response = oAuthService.oauthSignup(request);
 
         return Response.success(response);
-    }
+    }*/
 }

@@ -6,7 +6,6 @@ import staysplit.hotel_reservation.hotel.dto.request.UpdateHotelRequest;
 import staysplit.hotel_reservation.photo.domain.PhotoEntity;
 import staysplit.hotel_reservation.provider.domain.entity.ProviderEntity;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 @Entity

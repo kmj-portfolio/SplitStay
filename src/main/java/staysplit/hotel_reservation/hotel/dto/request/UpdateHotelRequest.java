@@ -5,8 +5,8 @@ import java.math.BigDecimal;
 public record UpdateHotelRequest(
         String name,
         String address,
-        BigDecimal longitude,
-        BigDecimal latitude,
+        Double longitude,
+        Double latitude,
         String description,
         Integer starLevel
 ) {}
