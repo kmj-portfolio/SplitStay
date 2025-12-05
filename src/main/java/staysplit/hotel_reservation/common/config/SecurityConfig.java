@@ -30,6 +30,7 @@ public class SecurityConfig {
             "/api/users/login",
             "/api/reviews/**",
             "/api/likelist/**",
+            "/api/hotels/search"
     };
 
     private final String[] PUBLIC_GET_ENDPOINTS = {

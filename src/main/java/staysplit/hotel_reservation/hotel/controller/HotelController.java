@@ -75,7 +75,7 @@ public class HotelController {
     }
 
     // 호텔 검색
-    @GetMapping("/search")
+    @PostMapping("/search")
     public Response<Page<GetHotelListResponse>> searchHotels(@RequestBody HotelSearchCondition condition, Pageable pageable) {
         Page<GetHotelListResponse> response = hotelSearchService.searchHotels(condition, pageable);
         return Response.success(response);
