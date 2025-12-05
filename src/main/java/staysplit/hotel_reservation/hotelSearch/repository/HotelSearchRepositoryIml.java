@@ -1,7 +1,11 @@
 package staysplit.hotel_reservation.hotelSearch.repository;
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,80 +15,128 @@ import org.springframework.stereotype.Repository;
 import staysplit.hotel_reservation.hotel.entity.HotelEntity;
 import staysplit.hotel_reservation.hotel.entity.QHotelEntity;
 import staysplit.hotel_reservation.hotelSearch.dto.request.HotelSearchCondition;
+import staysplit.hotel_reservation.reservation.domain.entity.QReservationEntity;
+import staysplit.hotel_reservation.reservation.domain.entity.ReservationEntity;
+import staysplit.hotel_reservation.reservedRoom.entity.QReservedRoomEntity;
+import staysplit.hotel_reservation.room.domain.QRoomEntity;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
 public class HotelSearchRepositoryIml implements HotelSearchRepository {
+
     private final JPAQueryFactory queryFactory;
+
+    private static final double SEARCH_RADIUS = 5.0; // 검색할 반경 (km)
+
+    private static final QHotelEntity HOTEL = QHotelEntity.hotelEntity;
+    private static final QReservedRoomEntity RESERVED_ROOM = QReservedRoomEntity.reservedRoomEntity;
+    private static final QReservationEntity RESERVATION = QReservationEntity.reservationEntity;
+    private static final QRoomEntity ROOM = QRoomEntity.roomEntity;
 
     @Override
     public Page<HotelEntity> searchNearbyHotels(HotelSearchCondition condition, Pageable pageable) {
-        QHotelEntity hotel = QHotelEntity.hotelEntity;
+        // 체크인, 체크아웃 날짜, 인원, 가격, 별점 계산
+        BooleanBuilder builder = buildSearchPredicate(condition);
 
-        // 1. 중심 latitude와 latitude를 radians로 계산)
-        NumberExpression<Double> centerLatRad =
-                Expressions.numberTemplate(Double.class, "RADIANS({0})", condition.getLatitude());
-        NumberExpression<Double> centerLonRad =
-                Expressions.numberTemplate(Double.class, "RADIANS({0})", condition.getLongitude());
-
-        // 호텔의 longitude와 latitude도 radians로 변환
-        NumberExpression<Double> hotelLatRad =
-                Expressions.numberTemplate(Double.class, "RADIANS({0})", hotel.latitude);
-        NumberExpression<Double> hotelLonRad =
-                Expressions.numberTemplate(Double.class, "RADIANS({0})", hotel.longitude);
-
-        // 2. 두 지점의 위도와 경도 차이 계산
-        NumberExpression<Double> deltaLat = hotelLatRad.subtract(centerLatRad);
-        NumberExpression<Double> deltaLon = hotelLonRad.subtract(centerLonRad);
-
-        // 3.
-        NumberExpression<Double> sinDeltaLatHalf =
-                Expressions.numberTemplate(Double.class, "SIN(({0}) / 2)", deltaLat);
-        NumberExpression<Double> sinDeltaLonHalf =
-                Expressions.numberTemplate(Double.class, "SIN(({0}) / 2)", deltaLon);
-
-        NumberExpression<Double> squaredLat = sinDeltaLatHalf.multiply(sinDeltaLatHalf);
-        NumberExpression<Double> squaredLon = sinDeltaLonHalf.multiply(sinDeltaLonHalf);
-
-        // cos(lat1), cos(lat2)
-        NumberExpression<Double> cosLat1 =
-                Expressions.numberTemplate(Double.class, "COS({0})", centerLatRad);
-        NumberExpression<Double> cosLat2 =
-                Expressions.numberTemplate(Double.class, "COS({0})", hotelLatRad);
-
-        // Haversine의 a계산
-        NumberExpression<Double> cosPart = cosLat1.multiply(cosLat2).multiply(squaredLon);
-        NumberExpression<Double> a = squaredLat.add(cosPart);
-
-        // Haversine의 c 계산
-        NumberExpression<Double> sqrtA =
-                Expressions.numberTemplate(Double.class, "SQRT({0})", a);
-        NumberExpression<Double> c =
-                Expressions.numberTemplate(Double.class, "2 * ASIN({0})", sqrtA);
-
-        // 최종 거리 계산 = R * c
-        NumberExpression<Double> distance =
-                Expressions.numberTemplate(Double.class, "{0} * {1}", 6371.0, c);
+        // 거리 계산
+        NumberExpression<Double> distance = calculateDistance(condition.getLongitude(), condition.getLatitude());
+        builder.and(distance.loe(SEARCH_RADIUS));
 
         List<HotelEntity> content = queryFactory
-                .selectFrom(hotel)
-                .where(distance.loe(5.0))   // 5km 이내
-                .orderBy(distance.asc())    // 거리순
+                .selectDistinct(HOTEL)
+                .from(HOTEL)
+                .join(ROOM).on(ROOM.hotel.eq(HOTEL))
+                .leftJoin(RESERVATION).on(RESERVATION.hotel.eq(HOTEL))
+                .leftJoin(RESERVED_ROOM).on(RESERVED_ROOM.reservation.eq(RESERVATION))
+                .where(builder)
+                .orderBy(distance.asc()) // 거리 순 정렬
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
         Long total = queryFactory
-                .select(hotel.count())
-                .from(hotel)
-                .where(distance.loe(5.0))
+                .select(HOTEL.countDistinct())
+                .from(HOTEL)
+                .join(ROOM).on(ROOM.hotel.eq(HOTEL))
+                .leftJoin(RESERVATION).on(RESERVATION.hotel.eq(HOTEL))
+                .leftJoin(RESERVED_ROOM).on(RESERVED_ROOM.reservation.eq(RESERVATION))
+                .where(builder)
                 .fetchOne();
 
         return new PageImpl<>(content, pageable, total == null ? 0 : total);
     }
 
+    // 조건 조합: 체크인, 체크아웃 날짜, 인원, 가격, 별점 계산  (거리는 없음)
+    private BooleanBuilder buildSearchPredicate(HotelSearchCondition condition) {
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(availableBetween(condition.getCheckIn(), condition.getCheckOut()));
+        builder.and(numGuestGoe(condition.getNumGuest()));
+        builder.and(minPrice(condition.getMinPrice()));
+        builder.and(maxPrice(condition.getMaxPrice()));
+        builder.and(starLevelGoe(condition.getNumStar()));
+        return builder;
+    }
 
+    // MySQL ST_Distance_Sphere 사용해서 두 coordinate 거리 구하기 (KM)
+    private NumberExpression calculateDistance(Double givenLongitude, Double givenLatitude) {
+
+        NumberExpression<Double> distanceMeter = Expressions.numberTemplate(
+                Double.class,
+                "ST_Distance_Sphere(POINT({0}, {1}), POINT({2}, {3}))",
+                HOTEL.longitude,            // 호텔의 경도와 위도
+                HOTEL.latitude,
+                givenLongitude,  // 사용자가 입력한 위치의 경도와 위도
+                givenLatitude
+        );
+
+        // 두 지점간의 거리를 m에서 km로 변환
+        return distanceMeter.divide(1000.0);
+    }
+
+    // 주어진 날짜 구간에 겹치는 예약이 없는 ROOM만 true
+    private BooleanExpression availableBetween(LocalDate checkIn, LocalDate checkOut) {
+        if (checkIn == null || checkOut == null) {
+            throw new IllegalArgumentException("체크인이나 체크아웃 날짜를 입력해주세요.");
+        }
+
+        if (!checkIn.isBefore(checkOut)) {
+            throw new IllegalArgumentException("체크인 날짜는 체크아웃 날짜보다 빨라야 합니다.");
+        }
+
+        QReservationEntity reservationSub = new QReservationEntity("reservationSub");
+        QReservedRoomEntity reservedRoomSub = new QReservedRoomEntity("reservedRoomSub");
+
+        // 해당 ROOM에 대해 주어진 기간과 겹치는 총 예약수량을 구하는 SubQUery
+        JPQLQuery<Integer> reservedQty = JPAExpressions
+                .select(reservedRoomSub.quantity.sum().coalesce(0))
+                .from(reservedRoomSub)
+                .join(reservedRoomSub.reservation, reservationSub)
+                .where(reservedRoomSub.room.eq(ROOM),
+                        reservationSub.checkInDate.lt(checkOut),
+                        reservationSub.checkOutDate.gt(checkIn)
+                );
+
+        return ROOM.totalQuantity.gt(reservedQty);
+
+    }
+
+    private BooleanExpression numGuestGoe(Integer numGuest) {
+        return numGuest == null ? null : ROOM.maxOccupancy.goe(numGuest);
+    }
+
+    private BooleanExpression minPrice(Integer minPrice) {
+        return minPrice == null ? null : ROOM.price.goe(minPrice);
+    }
+
+    private BooleanExpression maxPrice(Integer maxPrice) {
+        return maxPrice == null ? null : ROOM.price.loe(maxPrice);
+    }
+
+    private BooleanExpression starLevelGoe(Integer numStar) {
+        return numStar == null ? null : HOTEL.starLevel.goe(numStar);
+    }
 
 }
