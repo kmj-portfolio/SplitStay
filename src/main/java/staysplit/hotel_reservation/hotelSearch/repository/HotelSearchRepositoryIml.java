@@ -98,14 +98,6 @@ public class HotelSearchRepositoryIml implements HotelSearchRepository {
 
     // 주어진 날짜 구간에 겹치는 예약이 없는 ROOM만 true
     private BooleanExpression availableBetween(LocalDate checkIn, LocalDate checkOut) {
-        if (checkIn == null || checkOut == null) {
-            throw new IllegalArgumentException("체크인이나 체크아웃 날짜를 입력해주세요.");
-        }
-
-        if (!checkIn.isBefore(checkOut)) {
-            throw new IllegalArgumentException("체크인 날짜는 체크아웃 날짜보다 빨라야 합니다.");
-        }
-
         QReservationEntity reservationSub = new QReservationEntity("reservationSub");
         QReservedRoomEntity reservedRoomSub = new QReservedRoomEntity("reservedRoomSub");
 
