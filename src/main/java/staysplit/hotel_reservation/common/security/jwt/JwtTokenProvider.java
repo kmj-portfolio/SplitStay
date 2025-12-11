@@ -1,41 +1,105 @@
 package staysplit.hotel_reservation.common.security.jwt;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class JwtTokenProvider {
 
     private final String secretKey;
-    private final int expiration;
+    private final long accessTokenExpiryMs;
+    private final long refreshTokenExpiryMs;
     private Key encodedSecretKey;
+    private final StringRedisTemplate redisTemplate;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey, @Value("${jwt.expiration}") int expiration) {
+    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey,
+                            @Value("${jwt.access-expiration-minutes}") int accessTokenExpirationMinutes,
+                            @Value("${jwt.refresh-expiration-days}") int refreshTokenExpirationDays,
+                            StringRedisTemplate redisTemplate) {
         this.secretKey = secretKey;
-        this.expiration = expiration;
+        this.accessTokenExpiryMs = accessTokenExpirationMinutes * 60 * 1000L; // 분 -> ms = 분 * 60 seconds * 1000L;
+        this.refreshTokenExpiryMs = refreshTokenExpirationDays * 24 * 60 * 60 * 1000L; // 일 = 일 * 24 시간 * 60분 * 60 sec * 1000 ms
         this.encodedSecretKey = new SecretKeySpec(Base64.getDecoder().decode(secretKey),
                 SignatureAlgorithm.HS512.getJcaName());
+        this.redisTemplate = redisTemplate;
     }
 
-    public String createToken(String email, String role) {
+    // access token 생성
+    public String createAccessToken(String email) {
         Claims claims = Jwts.claims().setSubject(email);
-        claims.put("role", role);
         Date now = new Date();
         String token = Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + expiration * 60 * 1000L))
+                .setExpiration(new Date(now.getTime() + accessTokenExpiryMs))
                 .signWith(encodedSecretKey)
                 .compact();
 
         return token;
     }
+
+    // refreshToken 생성 & redis에 저장
+    public String createRefreshToken(Integer userId, String email) {
+        Date now = new Date();
+        String refreshToken =  Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + refreshTokenExpiryMs))
+                .signWith(encodedSecretKey)
+                .compact();
+
+        // Redis에 저장
+        String key = "RT:" + refreshToken;
+
+        redisTemplate.opsForValue().set(
+                key,                        // key
+                email,                      // value
+                refreshTokenExpiryMs,       // timeout
+                TimeUnit.MILLISECONDS       // TTL 단위
+        );
+        return refreshToken;
+    }
+
+    // access token 연장
+    public String recreateAccessToken(String refreshToken) {
+
+        // REDIS에 refresh token이 존재하는지 확인
+        String key = "RT:" + refreshToken;
+        String email = redisTemplate.opsForValue().get(key);
+        if (email == null) {
+            throw new IllegalArgumentException("Refresh Token이 유효하지 않습니다.");
+        }
+
+        // Refresh Token이 DB에 있는 경우, JWT 서명 검증 + 만료 검증
+        Jws<Claims> claimsJws = Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(refreshToken);
+
+        Claims claims = claimsJws.getBody();
+
+        if (claims.getExpiration().before(new Date())) {
+            throw new IllegalArgumentException("Refresh Token이 만료되었습니다. 다시 로그인 해주세요.");
+        }
+
+        // access token 새로 발급
+        return createAccessToken(email);
+    }
+
+    // 로그아웃 시 refresh token 무효화
+    public void invalidateRefreshToken(String refreshToken) {
+        redisTemplate.delete("RT:" + refreshToken);
+    }
+
 }

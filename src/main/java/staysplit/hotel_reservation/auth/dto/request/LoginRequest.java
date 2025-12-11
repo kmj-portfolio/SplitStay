@@ -1,4 +1,4 @@
-package staysplit.hotel_reservation.user.domain.dto.request;
+package staysplit.hotel_reservation.auth.dto.request;
 
 
 public record LoginRequest(

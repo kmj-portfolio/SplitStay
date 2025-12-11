@@ -1,4 +1,4 @@
-package staysplit.hotel_reservation.common.config;
+package staysplit.hotel_reservation.common.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +12,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import staysplit.hotel_reservation.common.security.jwt.CustomAccessDeniedHandler;
 import staysplit.hotel_reservation.common.security.jwt.CustomAuthenticationEntryPoint;
 import staysplit.hotel_reservation.common.security.jwt.JwtTokenFilter;
 
@@ -27,7 +28,9 @@ public class SecurityConfig {
     private final String[] PUBLIC_POST_ENDPOINTS = {
             "/api/customers/sign-up",
             "/api/providers/sign-up",
-            "/api/users/login",
+            "/api/auth/login",
+            "/api/auth/refresh",
+            "/api/auth/logout",
             "/api/reviews/**",
             "/api/likelist/**",
             "/api/hotels/search"
@@ -55,7 +58,7 @@ public class SecurityConfig {
     };
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, CustomAccessDeniedHandler customAccessDeniedHandler) throws Exception {
 
         return httpSecurity
                 .cors(cors -> cors.configurationSource(configurationSource()))
@@ -81,7 +84,10 @@ public class SecurityConfig {
 
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
-                //.exceptionHandling(ex -> ex.authenticationEntryPoint(customAuthenticationEntryPoint))
+
+                // Customized spring security error handling
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(customAuthenticationEntryPoint)
+                                                                                .accessDeniedHandler(customAccessDeniedHandler))
                 .build();
     }
 

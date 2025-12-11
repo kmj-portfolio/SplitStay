@@ -3,7 +3,6 @@ package staysplit.hotel_reservation.common.security.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.*;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,10 +13,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import staysplit.hotel_reservation.user.service.CustomUserDetailsService;
+import staysplit.hotel_reservation.common.security.CustomUserDetailsService;
 
 import java.io.IOException;
-import java.util.List;
 
 @Component
 @Slf4j
@@ -32,36 +30,32 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
-        log.info(">>> Incoming request path: {}", path);
+        log.debug(">>> Incoming request path: {}", path);
 
-        String jwtToken = null;
-        Cookie[] cookies = request.getCookies();
+       try {
+           String authorizationHeader = request.getHeader("Authorization");
+           String jwtToken = null;
 
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("token")) {
-                    jwtToken = cookie.getValue();
-                }
-            }
-        }
+           if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+               jwtToken = authorizationHeader.substring(7);
+           }
 
-        try {
-            if (jwtToken != null) {
+           if (jwtToken != null) {
+               Claims claims = Jwts.parserBuilder()
+                       .setSigningKey(secretKey)
+                       .build()
+                       .parseClaimsJws(jwtToken)
+                       .getBody();
 
-                Claims claims = Jwts.parserBuilder()
-                        .setSigningKey(secretKey)
-                        .build()
-                        .parseClaimsJws(jwtToken)
-                        .getBody();
+               String email = claims.getSubject();
+               UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-                String email = claims.getSubject();
-                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+               UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                       userDetails, null, userDetails.getAuthorities());
+               SecurityContextHolder.getContext().setAuthentication(authentication);
+           }
 
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-        }  catch (Exception e) {
+       } catch (Exception e) {
             log.error("JWT 토큰 인증 실패", e);
             SecurityContextHolder.clearContext();
         }

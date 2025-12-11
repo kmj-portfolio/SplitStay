@@ -25,7 +25,7 @@ spring:
             client-secret: ${GOOGLE_CLIENT_SECRET}
             scope: openid email profile
             redirect-uri: "https://localhost:8443/api/customers/google/callback"
-            callback-uri: "https://localhost:5173/oauth/google?code="
+            #callback-uri: "https://localhost:5173/oauth/google?code="
             authorization-grant-type: authorization_code
         provider:
           google:
@@ -44,13 +44,14 @@ oauth:
     redirect-uri: https://localhost:8443/oauth/kakao/redirect
 
 jwt:
-  secret: dG9ieXNwcmluZ2Jvb3RjYW1wZ3VpZGVkYXRhYmFzZWVuZ2xpc2hqYXBhbnNlZG9zaWJvb2tzdG9ieXNwcmluZ2Jvb3RjYW1w
-  expiration: 1800
+  secret: secret
+  access-expiration-minutes: 15
+  refresh-expiration-days: 14
 
 
 iamport:
   api-key: 0165681344553345
-  secret: XL8h5EJaZDMiEQyzqIIlsV8BkIQOTD23ZaLU2abAWPlNzy2ijXIgk6lbv6XkZhI4hQWfmSFYuUifTRWw
+  secret: secret
 
 server:
   port: 8443
@@ -65,9 +66,6 @@ server:
       cookie:
         same-site: none
         secure: true
-
-file:
-  dir: "C:/Users/...사진 저장할 주소"
 
 file:
   dir: "C:/Users/...사진 저장할 주소"

@@ -1,4 +1,4 @@
-package staysplit.hotel_reservation.common.oauth.dto;
+package staysplit.hotel_reservation.common.security.oauth.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

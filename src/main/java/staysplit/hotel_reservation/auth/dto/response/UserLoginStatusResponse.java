@@ -1,4 +1,4 @@
-package staysplit.hotel_reservation.user.domain.dto.response;
+package staysplit.hotel_reservation.auth.dto.response;
 
 public record UserLoginStatusResponse(
         String email,
