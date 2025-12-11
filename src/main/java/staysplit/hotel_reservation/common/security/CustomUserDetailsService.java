@@ -1,4 +1,4 @@
-package staysplit.hotel_reservation.user.service;
+package staysplit.hotel_reservation.common.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

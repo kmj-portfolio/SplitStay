@@ -10,8 +10,9 @@ import staysplit.hotel_reservation.common.entity.Response;
 public class ExceptionManager {
     @ExceptionHandler(AppException.class)
     public ResponseEntity<?> appExceptionHandler(AppException e) {
-        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
-                .body(Response.error(e.getMessage()));
+        return ResponseEntity
+                .status(e.getErrorCode().getHttpStatus())
+                .body(Response.error(e));
     }
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> runtimeExceptionHandler(RuntimeException e) {

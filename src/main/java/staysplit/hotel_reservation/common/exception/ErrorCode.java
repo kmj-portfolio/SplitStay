@@ -3,6 +3,7 @@ package staysplit.hotel_reservation.common.exception;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
+import retrofit2.http.HTTP;
 
 @Getter
 @AllArgsConstructor
@@ -19,6 +20,7 @@ public enum ErrorCode {
     PROVIDER_ALREADY_REGISTERED(HttpStatus.CONFLICT, "이미 존재하는 공급자입니다"),
     USER_NOT_LOGGED_IN(HttpStatus.UNAUTHORIZED, "로그인 상태가 아닙니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "토큰이 유효하지 않습니다."),
+    NO_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "Refresh Token이 만료되었습니다. 다시 로그인해 주세요."),
 
     // Room
     ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 방입니다"),
