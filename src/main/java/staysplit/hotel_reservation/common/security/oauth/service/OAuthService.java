@@ -1,4 +1,4 @@
-package staysplit.hotel_reservation.common.oauth.service;
+package staysplit.hotel_reservation.common.security.oauth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import staysplit.hotel_reservation.common.exception.AppException;
 import staysplit.hotel_reservation.common.exception.ErrorCode;
-import staysplit.hotel_reservation.common.oauth.dto.*;
 import staysplit.hotel_reservation.common.security.jwt.JwtTokenProvider;
+import staysplit.hotel_reservation.common.security.oauth.dto.*;
 import staysplit.hotel_reservation.customer.domain.dto.response.CustomerDetailsResponse;
 import staysplit.hotel_reservation.customer.domain.entity.CustomerEntity;
 import staysplit.hotel_reservation.customer.repository.CustomerRepository;
@@ -22,12 +22,12 @@ import staysplit.hotel_reservation.user.repository.UserRepository;
 public class OAuthService {
     private final BCryptPasswordEncoder encoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final GoogleService googleService;
-    private final KakaoService kakaoService;
+    //private final GoogleService googleService;
+    //private final KakaoService kakaoService;
     private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
 
-
+    /*
     // oauth로 회원가입
     public CustomerDetailsResponse oauthSignup(OauthSignupRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -79,5 +79,5 @@ public class OAuthService {
         }
         // 회원가입 된 회원은 jwt 토큰 발급
         return jwtTokenProvider.createToken(existingUser.getEmail(), existingUser.getRole().toString());
-    }
+    }*/
 }

@@ -1,4 +1,4 @@
-package staysplit.hotel_reservation.common.oauth.service;
+package staysplit.hotel_reservation.common.security.oauth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,13 +7,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
-import staysplit.hotel_reservation.common.oauth.dto.AccessTokenDto;
-import staysplit.hotel_reservation.common.oauth.dto.KakaoProfileDto;
+import staysplit.hotel_reservation.common.security.oauth.dto.AccessTokenDto;
+import staysplit.hotel_reservation.common.security.oauth.dto.KakaoProfileDto;
 
 @Service
 @RequiredArgsConstructor
 public class KakaoService {
-
+/*
     @Value("${oauth.kakao.client-id}")
     private String kakoClientId;
 
@@ -46,5 +46,5 @@ public class KakaoService {
                 .retrieve()
                 .toEntity(KakaoProfileDto.class);
         return response.getBody();
-    }
+    }*/
 }

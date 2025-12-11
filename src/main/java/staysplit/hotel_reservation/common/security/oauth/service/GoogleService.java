@@ -1,4 +1,4 @@
-package staysplit.hotel_reservation.common.oauth.service;
+package staysplit.hotel_reservation.common.security.oauth.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,12 +14,13 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 import staysplit.hotel_reservation.common.exception.AppException;
 import staysplit.hotel_reservation.common.exception.ErrorCode;
-import staysplit.hotel_reservation.common.oauth.dto.AccessTokenDto;
-import staysplit.hotel_reservation.common.oauth.dto.GoogleProfileDto;
+import staysplit.hotel_reservation.common.security.oauth.dto.AccessTokenDto;
+import staysplit.hotel_reservation.common.security.oauth.dto.GoogleProfileDto;
 
 @Slf4j
 @Service
 public class GoogleService {
+    /*
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String clientId;
@@ -72,5 +73,5 @@ public class GoogleService {
                 .retrieve()
                 .toEntity(GoogleProfileDto.class);
         return response.getBody();
-    }
+    }*/
 }

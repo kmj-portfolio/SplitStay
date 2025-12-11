@@ -1,23 +1,15 @@
 package staysplit.hotel_reservation.customer.controller;
 
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import staysplit.hotel_reservation.common.exception.AppException;
-import staysplit.hotel_reservation.common.exception.ErrorCode;
-import staysplit.hotel_reservation.common.oauth.dto.OauthSignupRequest;
-import staysplit.hotel_reservation.common.oauth.dto.RedirectDto;
 import staysplit.hotel_reservation.common.entity.Response;
 //import staysplit.hotel_reservation.common.oauth.service.OAuthService;
 import staysplit.hotel_reservation.customer.domain.dto.request.NicknameChangeRequest;
 import staysplit.hotel_reservation.customer.domain.dto.request.CustomerSignupRequest;
 import staysplit.hotel_reservation.customer.domain.dto.response.CustomerDetailsResponse;
 import staysplit.hotel_reservation.customer.service.CustomerService;
-
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/customers")
@@ -27,7 +19,7 @@ public class CustomerController {
     private final CustomerService customerService;
     //private final OAuthService oAuthService;
 
-    @Value("${jwt.expiration}")
+    //@Value("${jwt.expiration}")
     private int jwtExpirationInSeconds;
 //    @Value("${spring.security.oauth2.client.registration.google.callback-uri}")
 //    private String callback_uri;

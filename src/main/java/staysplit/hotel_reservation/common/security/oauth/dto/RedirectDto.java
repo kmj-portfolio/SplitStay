@@ -1,4 +1,4 @@
-package staysplit.hotel_reservation.common.oauth.dto;
+package staysplit.hotel_reservation.common.security.oauth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

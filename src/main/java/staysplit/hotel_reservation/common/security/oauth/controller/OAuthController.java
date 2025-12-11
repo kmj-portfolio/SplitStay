@@ -1,22 +1,22 @@
-package staysplit.hotel_reservation.common.oauth.controller;
+package staysplit.hotel_reservation.common.security.oauth.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import staysplit.hotel_reservation.common.entity.Response;
 import staysplit.hotel_reservation.common.exception.AppException;
 import staysplit.hotel_reservation.common.exception.ErrorCode;
-import staysplit.hotel_reservation.common.oauth.dto.OauthSignupRequest;
-import staysplit.hotel_reservation.common.oauth.dto.RedirectDto;
-import staysplit.hotel_reservation.common.oauth.service.OAuthService;
+import staysplit.hotel_reservation.common.security.oauth.dto.OauthSignupRequest;
+import staysplit.hotel_reservation.common.security.oauth.dto.RedirectDto;
+import staysplit.hotel_reservation.common.security.oauth.service.OAuthService;
 import staysplit.hotel_reservation.customer.domain.dto.response.CustomerDetailsResponse;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/oauth")
-public class AuthController {
+public class OAuthController {
 
     private final OAuthService oAuthService;
-
+    /*
     @PostMapping("/google/login")
     public Response<?> googleLogin(@RequestBody RedirectDto redirectDto) {
         try {
@@ -52,5 +52,5 @@ public class AuthController {
         CustomerDetailsResponse response = oAuthService.oauthSignup(request);
         return Response.success(response);
     }
-
+*/
 }
