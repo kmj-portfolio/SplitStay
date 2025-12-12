@@ -73,6 +73,8 @@ file:
 app:
   base-url: https://localhost:8080
 
-  logging:
-    level:
-      org.springframework.security: DEBUG
+logging:
+  level:
+    root: INFO
+    org.springframework.security: DEBUG
+    staysplit.hotel_reservation: DEBUG
