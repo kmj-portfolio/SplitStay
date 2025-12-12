@@ -113,11 +113,21 @@ public class AuthController {
 
     // access token 재발급
     @PostMapping("/refresh")
-    public Response<?> refresh(@CookieValue("refreshToken") String refreshToken) {
-        if (refreshToken == null) {
-            return Response.error(ErrorCode.NO_REFRESH_TOKEN);
-        }
-        String newAccessToken = jwtTokenProvider.recreateAccessToken(refreshToken);
-        return Response.success(new AccessTokenResponse(newAccessToken));
+    public Response<AccessTokenResponse> refresh(@CookieValue("refreshToken") String refreshToken,
+                                         HttpServletResponse response) {
+
+        JwtTokenProvider.TokenPair tokenPair = jwtTokenProvider.recreateAccessTokenAndRotateRefreshToken(refreshToken);
+
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", tokenPair.refreshToken())
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(Duration.ofDays(refreshTokenExpiryInDays))
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
+
+        return Response.success(new AccessTokenResponse(tokenPair.accessToken()));
     }
 }

@@ -33,7 +33,7 @@ public class AuthService {
 
         // 토큰 새성
         String accessToken = jwtTokenProvider.createAccessToken(user.getEmail());
-        String refreshToken = jwtTokenProvider.createRefreshToken(user.getId(), user.getEmail());
+        String refreshToken = jwtTokenProvider.createRefreshToken(user.getEmail());
 
         String role = user.getRole().toString();
         return new UserLoginResponse(accessToken, refreshToken, role);

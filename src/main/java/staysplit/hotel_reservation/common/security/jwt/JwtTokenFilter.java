@@ -1,6 +1,7 @@
 package staysplit.hotel_reservation.common.security.jwt;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,30 +33,35 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         log.debug(">>> Incoming request path: {}", path);
 
-       try {
-           String authorizationHeader = request.getHeader("Authorization");
-           String jwtToken = null;
+        try {
+            String authorizationHeader = request.getHeader("Authorization");
+            String jwtToken = null;
 
-           if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-               jwtToken = authorizationHeader.substring(7);
-           }
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                jwtToken = authorizationHeader.substring(7);
+            }
 
-           if (jwtToken != null) {
-               Claims claims = Jwts.parserBuilder()
-                       .setSigningKey(secretKey)
-                       .build()
-                       .parseClaimsJws(jwtToken)
-                       .getBody();
+            if (jwtToken != null) {
+                Claims claims = Jwts.parserBuilder()
+                        .setSigningKey(secretKey)
+                        .build()
+                        .parseClaimsJws(jwtToken)
+                        .getBody();
 
-               String email = claims.getSubject();
-               UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                String email = claims.getSubject();
+                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-               UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                       userDetails, null, userDetails.getAuthorities());
-               SecurityContextHolder.getContext().setAuthentication(authentication);
-           }
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
 
-       } catch (Exception e) {
+
+        } catch (ExpiredJwtException e) {
+            log.debug("Access Token이 만료되었습니다.");
+            SecurityContextHolder.clearContext();
+
+        } catch (Exception e) {
             log.error("JWT 토큰 인증 실패", e);
             SecurityContextHolder.clearContext();
         }
