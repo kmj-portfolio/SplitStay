@@ -93,7 +93,7 @@ public class JwtTokenProvider {
             }
 
             // 회전
-            redisTemplate.delete(refreshToken);
+            redisTemplate.delete(key);
 
             // 새 refresh token & access token 발급
             String accessToken = createAccessToken(email);
@@ -102,7 +102,7 @@ public class JwtTokenProvider {
 
         } catch (JwtException | IllegalArgumentException exception) {
             // 파싱 실패, 서명 불일치 -> Redis에서 삭제
-            redisTemplate.delete(refreshToken);
+            redisTemplate.delete(key);
             throw new IllegalArgumentException("Refresh Token이 유효하지 않습니다.", exception);
         }
     }
