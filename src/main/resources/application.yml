@@ -1,16 +1,18 @@
 spring:
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/staysplit
+    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+    url: jdbc:p6spy:mysql://localhost:3306/hotel_project_db
     username: root
     password: qwer1234
   jpa:
-    show-sql: true
+    show-sql: false
     database: mysql
-    hibernate.ddl-auto: update
+    hibernate:
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
+        default_batch_fetch_size: 50
   data:
     redis:
       host: localhost
@@ -77,4 +79,7 @@ logging:
   level:
     root: INFO
     org.springframework.security: DEBUG
-    staysplit.hotel_reservation: DEBUG
+    #staysplit.hotel_reservation: DEBUG
+    p6spy: INFO
+    com.p6spy: INFO
+
