@@ -67,6 +67,10 @@ public class HotelSearchRepositoryIml implements HotelSearchRepository {
                 .where(HOTEL.id.in(hotelIdsWithinDistance))
                 .fetch();
 
+        content.sort((a, b) ->
+                Integer.compare(hotelIdsWithinDistance.indexOf(a.getId()), hotelIdsWithinDistance.indexOf(b.getId()))
+        );
+
         return new PageImpl<>(content, pageable, total == null ? 0 : total);
     }
 
