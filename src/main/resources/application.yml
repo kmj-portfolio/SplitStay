@@ -2,11 +2,11 @@ spring:
   datasource:
     driver-class-name: com.p6spy.engine.spy.P6SpyDriver
     url: jdbc:p6spy:mysql://localhost:3306/hotel_project_db
-    username: root
-    password: qwer1234
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   jpa:
-    show-sql: false
     database: mysql
+    show-sql: false
     hibernate:
       ddl-auto: update
     properties:
@@ -36,6 +36,20 @@ spring:
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
             user-name-attribute: sub
 
+server:
+  port: 8443
+  ssl:
+    enabled: true
+    key-store: classpath:keystore.p12
+    key-store-password: ${SSL_KEYSTORE_PASSWORD}
+    key-store-type: PKCS12
+    key-alias: myserver
+  servlet:
+    session:
+      cookie:
+        same-site: none
+        secure: true
+
 oauth:
   google:
     client-id: xxxx
@@ -46,28 +60,13 @@ oauth:
     redirect-uri: https://localhost:8443/oauth/kakao/redirect
 
 jwt:
-  secret: secret
+  secret: ${JWT_SECRET}
   access-expiration-minutes: 15
   refresh-expiration-days: 14
 
-
 iamport:
-  api-key: 0165681344553345
-  secret: secret
-
-server:
-  port: 8443
-  ssl:
-    enabled: true
-    key-store: classpath:keystore.p12
-    key-store-password: changeit
-    key-store-type: PKCS12
-    key-alias: myserver
-  servlet:
-    session:
-      cookie:
-        same-site: none
-        secure: true
+  api-key: ${IAMPORT_API_KEY}
+  secret: ${IAMPORT_SECRET}
 
 file:
   dir: "C:/Users/...사진 저장할 주소"
