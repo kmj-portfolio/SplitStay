@@ -1,0 +1,38 @@
+# 호텔 예약 플랫폼 SplitStay
+## ERD
+![ERD](/assets/splitstay_erd.png)
+
+<br>
+
+## 기술적 이슈  해결 과정
+<br>
+
+***[#1] 호텔 검색 API 성능 개선하기***
+1) [***리팩토링이 필요했던 이유***](https://www.notion.so/kimdevlog/2afe5677f7ab80ceacbcc794294001e0)  
+    Fetch Join으로 데이터가 뻥튀기 되고, 정렬/페이징을 메모리에서 처리하던 구조의 문제점을 발견했습니다.
+<br><br>
+
+2) [***Haversine 대신 ST_DISANCE_SPHERE() 사용하기***](https://www.notion.so/kimdevlog/Haversine-MySQL-ST_DISTANCE_SPHERE-2bfe5677f7ab80deb005fbd8f49f4aa7)  
+    거리 계산, 정렬, 페이징을 애플리케이션 서버가 아니라 DB에서 하도록 했습니다.
+<br><br>
+3) (트러블슈팅) [***Bounding Box가 없다면 어떻게 될까? Index는 있지만 적용하지 못하는 문제 해결***](https://www.notion.so/kimdevlog/Bounding-Box-Index-2cbe5677f7ab80029380daae334f9982)  
+    EXPLAIN ANALYZE로 왜 옵티마이저가 인덱스가 있는데도 사용하지 않았는지, 그리고 강제로 사용해도 손해였는지 원인을 찾아서 Bounding Box 적용으로 해결했습니다.  
+    Bounding Box는 검색 반경을 감싸는 최소 면적의 사각형입니다. 이 프로젝트에서는 현재 위치 기준으로 Bounding Box를 계산해 BETWEEN latitude/longitude 쿼리를 사용해 거리 계산을 해야 하는 호텔을 줄였습니다.  
+<br>
+
+4) [***k6로 VU임계점 찾고, 리팩토링 전후 성능 테스트***](https://www.notion.so/kimdevlog/K6-VU-2cbe5677f7ab8065a4eae4b1e5df3a61)  
+    stages를 통해 VU의 hard threshold와 soft threshold를 찾은 후, p95 < 300ms를 만족하는 VU에서 전후 비교 
+
+<br>
+
+***[#2] 호텔 검색 API에서 발생하는 N + 1 문제 해결***
+
+[***호텔 검색 API에서 발생하는 N + 1문제 batch size 설정으로 해결하기***](https://www.notion.so/kimdevlog/API-N-1-batch-size-2cae5677f7ab807baed6c865060f36b5#2cae5677f7ab808fa7e6f86e2b5b3452)  
+
+<br>
+
+***[#3] 예약 API - 언제 제고를 차감해야할까? 초기 Redis 기반 구현에서 Status 관리로 Race Condition 해결하기***
+
+[***예약 시스템 - 언제 재고를 차감해야 할까?***](https://www.notion.so/kimdevlog/227e5677f7ab80428b28ce75517c91c1)
+
+<br> 
