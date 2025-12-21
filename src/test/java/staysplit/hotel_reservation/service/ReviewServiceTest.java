@@ -1,4 +1,4 @@
-package staysplit.hotel_reservation.review.service;
+package staysplit.hotel_reservation.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +19,7 @@ import staysplit.hotel_reservation.review.domain.dto.request.CreateReviewRequest
 import staysplit.hotel_reservation.review.domain.dto.request.ModifyReviewRequest;
 import staysplit.hotel_reservation.review.domain.entity.ReviewEntity;
 import staysplit.hotel_reservation.review.repository.ReviewRepository;
+import staysplit.hotel_reservation.review.service.ReviewService;
 
 import java.util.Optional;
 import java.util.Collections;
