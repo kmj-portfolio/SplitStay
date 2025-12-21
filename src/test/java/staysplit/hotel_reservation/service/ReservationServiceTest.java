@@ -156,7 +156,7 @@ public class ReservationServiceTest {
 
             given(customerValidator.validateCustomerByEmail("friend@example.com")).willReturn(friendCustomer);
             given(hotelValidator.validateHotel(1)).willReturn(hotel);
-            given(roomRepository.findByIdForUpdate(5)).willReturn(Optional.of(room));
+            given(roomRepository.findByIdWithLock(5)).willReturn(Optional.of(room));
             given(reservedRoomRepository.countReservedRoomsForDateRange(
                     5,
                     request.checkInDate(),
@@ -204,7 +204,7 @@ public class ReservationServiceTest {
 
             given(customerValidator.validateCustomerByEmail("guest@example.com")).willReturn(customer);
             given(hotelValidator.validateHotel(1)).willReturn(hotel);
-            given(roomRepository.findByIdForUpdate(5)).willReturn(Optional.of(room));
+            given(roomRepository.findByIdWithLock(5)).willReturn(Optional.of(room));
             given(reservedRoomRepository.countReservedRoomsForDateRange(
                     5,
                     request.checkInDate(),

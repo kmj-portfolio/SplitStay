@@ -27,7 +27,7 @@ public class ReservedRoomRepositoryImpl implements CustomReservedRoomRepository 
 
         BooleanExpression confirmed = reservation.status.eq(ReservationStatus.CONFIRMED);
         BooleanExpression waitingPaymentAndNotExpired = reservation.status.eq(ReservationStatus.WAITING_PAYMENT)
-                .and(reservation.expiresAt.lt(LocalDateTime.now()));
+                .and(reservation.expiresAt.gt(LocalDateTime.now()));
 
         Integer count = queryFactory
                 .select(reservedRoom.quantity.sum()) // 예약된 방의 총 수량 합

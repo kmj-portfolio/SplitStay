@@ -134,7 +134,7 @@ public class ReservationService {
 
         // 요청된 방 하나씩 예약
         for (RoomReservationRequest roomDto : request.roomsAndQuantities()) {
-            RoomEntity room = roomRepository.findByIdForUpdate(roomDto.roomId())
+            RoomEntity room = roomRepository.findByIdWithLock(roomDto.roomId())
                     .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND, ErrorCode.ROOM_NOT_FOUND.getMessage()));
 
             // 이 방이 지정된 체크아웃과 체크인 날자 동안 재고가 있는지 확인
