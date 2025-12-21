@@ -45,8 +45,6 @@ class UserServiceTest {
     private String nonexistentEmail;
     private String rawPassword;
     private String encodedPassword;
-    private String accessToken;
-    private String refreshToken;
 
     private UserEntity testUser;
 
@@ -56,8 +54,6 @@ class UserServiceTest {
         nonexistentEmail = "nonexistent@example.com";
         rawPassword = "12345";
         encodedPassword = "encodedPassword";
-        accessToken = "mock.access.token";
-        refreshToken = "mock.refresh.token";
 
         testUser = UserEntity.builder()
                 .email(testEmail)
@@ -70,6 +66,9 @@ class UserServiceTest {
     @DisplayName("회원 로그인 테스트")
     class UserLogin {
 
+        private final String ACCESS_TOKEN = "mock.access.token";
+        private final String REFRESH_TOKEN = "mock.refresh.token";
+
         @Test
         @DisplayName("로그인 성공 테스트")
         void login_success_returnsToken() {
@@ -79,15 +78,15 @@ class UserServiceTest {
             // when
             given(userRepository.findByEmail(testEmail)).willReturn(Optional.of(testUser));
             given(passwordEncoder.matches(rawPassword, encodedPassword)).willReturn(true);
-            given(jwtTokenProvider.createAccessToken(testEmail)).willReturn(accessToken);
-            given(jwtTokenProvider.createRefreshToken(testEmail)).willReturn(refreshToken);
+            given(jwtTokenProvider.createAccessToken(testEmail)).willReturn(ACCESS_TOKEN);
+            given(jwtTokenProvider.createRefreshToken(testEmail)).willReturn(REFRESH_TOKEN);
 
             // when
             UserLoginResponse response = userService.login(loginRequest);
 
             // then
-            assertThat(response.accessToken()).isEqualTo(accessToken);
-            assertThat(response.refreshToken()).isEqualTo(refreshToken);
+            assertThat(response.accessToken()).isEqualTo(ACCESS_TOKEN);
+            assertThat(response.refreshToken()).isEqualTo(REFRESH_TOKEN);
             assertThat(response.role()).isEqualTo("CUSTOMER");
             then(userRepository).should().findByEmail(testEmail);
             then(jwtTokenProvider).should().createAccessToken(testEmail);
