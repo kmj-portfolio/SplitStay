@@ -64,7 +64,7 @@ public class ReservationService {
 
         reservationRepository.save(reservation);
 
-        // 방 예약
+        // 방 예약 (ReservedRoomEntity 생성 후 저장)
         int totalPrice = reserveRooms(request, reservation, nights, checkin, checkout);
         reservation.updateTotalPrice(totalPrice);
 
@@ -134,7 +134,8 @@ public class ReservationService {
 
         // 요청된 방 하나씩 예약
         for (RoomReservationRequest roomDto : request.roomsAndQuantities()) {
-            RoomEntity room = validateRoomById(roomDto.roomId());
+            RoomEntity room = roomRepository.findByIdForUpdate(roomDto.roomId())
+                    .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND, ErrorCode.ROOM_NOT_FOUND.getMessage()));
 
             // 이 방이 지정된 체크아웃과 체크인 날자 동안 재고가 있는지 확인
             int reservedCount = reservedRoomRepository.countReservedRoomsForDateRange(room.getId(), checkin, checkout);
