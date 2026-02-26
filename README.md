@@ -1,9 +1,47 @@
 # 호텔 예약 플랫폼 SplitStay
+
+목차
+1. [System Architecture](#system-architecture)
+2. [ERD](#erd)
+3. [주요 기술 스택](#주요-기술-스택)
+4. [API 문서](#api-documentation)
+5. [기술적 이슈  해결 과정](#기술적-이슈--해결-과정)
+
+## System Architecture
+![System Architecture]()
+
+<br>
+
 ## ERD
 ![ERD](/assets/splitstay_erd.png)
 
 <br>
 
+## API Documentation
+https://splitnstay.com/swagger-ui/index.html
+
+
+## 주요 기술 스택
+
+Backend
+- **Java 17**
+- **Spring Boot 3.5.0**
+- **Spring Data JPA** (N+1 해결 및 Lazy Loading 전략)
+- **QueryDSL** (동적 검색 조건 및 타입 안전 쿼리)
+
+Database
+- **MySQL 8.0** (복합 인덱스 설계 및 실행 계획 분석)
+- **Redis** (Refresh Token 저장, 캐싱 전략)
+
+Infrastructure & DevOps
+- **AWS EC2** (서비스 배포)
+- **Docker / Docker Compose** (컨테이너 기반 환경 구성)
+- **NGINX** (Reverse Proxy 및 포트 관리)
+- **GitHub Actions** (CI/CD 자동화 배포)
+
+<Br>
+
+---
 ## 기술적 이슈  해결 과정
 <br>
 
