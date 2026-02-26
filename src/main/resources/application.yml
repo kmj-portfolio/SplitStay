@@ -19,6 +19,11 @@ spring:
     redis:
       host: redis-server
       port: 6379
+      repositories:
+        enabled: false
+
+      autoconfigure:
+        exclude: org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
 
   security:
     oauth2:
@@ -61,7 +66,6 @@ iamport:
 file:
   # dir: "C:/Users/...사진 저장할 주소"
   dir: ${FILE_UPLOAD_DIR:/app/uploads}
-
 
 app:
   # TODO: change this when you apply HTTPS
