@@ -7,8 +7,10 @@
 4. [API 문서](#api-documentation)
 5. [기술적 이슈  해결 과정](#기술적-이슈--해결-과정)
 
+<br>
+
 ## System Architecture
-![System Architecture]()
+![System Architecture](/assets/system_architecture.jpeg)
 
 <br>
 
@@ -20,6 +22,7 @@
 ## API Documentation
 https://splitnstay.com/swagger-ui/index.html
 
+<br>
 
 ## 주요 기술 스택
 
@@ -38,7 +41,8 @@ Infrastructure & DevOps
 - **Docker / Docker Compose** (컨테이너 기반 환경 구성)
 - **NGINX** (Reverse Proxy 및 포트 관리)
 - **GitHub Actions** (CI/CD 자동화 배포)
-
+- AWS Route 53 (도메인 구매 및 DNS 설정)
+- HTTPS (Cerbot 기반 SSL 인증서 적용)
 <Br>
 
 ---
