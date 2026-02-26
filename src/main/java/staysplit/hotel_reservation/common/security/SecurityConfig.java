@@ -1,6 +1,7 @@
 package staysplit.hotel_reservation.common.security;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,6 +22,9 @@ import java.util.Arrays;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    @Value("${app.domain}")
+    private String appDomain;
 
     private final JwtTokenFilter jwtTokenFilter;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
@@ -97,7 +101,7 @@ public class SecurityConfig {
 
         // TODO: 추가적으로 배포 url이 나오면 추가
 
-        configuration.setAllowedOrigins(Arrays.asList("https://localhost:5173","http://localhost:3000"));
+        configuration.setAllowedOrigins(Arrays.asList("https://localhost:5173","http://localhost:3000", appDomain));
         configuration.setAllowedMethods(Arrays.asList("*")); // 모든 http method 허용
         configuration.setAllowedHeaders(Arrays.asList("*")); // 모든 http header 허용
         configuration.setAllowCredentials(true); // Authorization header 허용
