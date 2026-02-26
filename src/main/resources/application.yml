@@ -1,9 +1,10 @@
 spring:
   datasource:
     driver-class-name: com.p6spy.engine.spy.P6SpyDriver
-    url: jdbc:p6spy:mysql://localhost:3306/hotel_project_db
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:p6spy:mysql://mysql-server:3306/${MYSQL_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8
+    username: root
+    password: ${MYSQL_ROOT_PASSWORD}
+
   jpa:
     database: mysql
     show-sql: false
@@ -13,9 +14,10 @@ spring:
       hibernate:
         format_sql: true
         default_batch_fetch_size: 50
+
   data:
     redis:
-      host: localhost
+      host: redis-server
       port: 6379
 
   security:
@@ -36,19 +38,7 @@ spring:
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
             user-name-attribute: sub
 
-server:
-  port: 8443
-  ssl:
-    enabled: true
-    key-store: classpath:keystore.p12
-    key-store-password: ${SSL_KEYSTORE_PASSWORD}
-    key-store-type: PKCS12
-    key-alias: myserver
-  servlet:
-    session:
-      cookie:
-        same-site: none
-        secure: true
+
 
 oauth:
   google:
@@ -69,10 +59,14 @@ iamport:
   secret: ${IAMPORT_SECRET}
 
 file:
-  dir: "C:/Users/...사진 저장할 주소"
+  # dir: "C:/Users/...사진 저장할 주소"
+  dir: ${FILE_UPLOAD_DIR:/app/uploads}
+
 
 app:
-  base-url: https://localhost:8080
+  # TODO: change this when you apply HTTPS
+  base-url: http://${EC2_HOST:localhost}:8080
+  domain: ${APP_DOMAIN:http://localhost:5173}
 
 logging:
   level:
@@ -81,4 +75,3 @@ logging:
     #staysplit.hotel_reservation: DEBUG
     p6spy: INFO
     com.p6spy: INFO
-
