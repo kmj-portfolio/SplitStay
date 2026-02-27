@@ -29,7 +29,7 @@ https://splitnstay.com/swagger-ui/index.html
 Backend
 - **Java 17**
 - **Spring Boot 3.5.0**
-- **Spring Data JPA** (N+1 해결 및 Lazy Loading 전략)
+- **Spring Data JPA** 
 - **QueryDSL** (동적 검색 조건 및 타입 안전 쿼리)
 
 Database
@@ -41,8 +41,9 @@ Infrastructure & DevOps
 - **Docker / Docker Compose** (컨테이너 기반 환경 구성)
 - **NGINX** (Reverse Proxy 및 포트 관리)
 - **GitHub Actions** (CI/CD 자동화 배포)
-- AWS Route 53 (도메인 구매 및 DNS 설정)
-- HTTPS (Cerbot 기반 SSL 인증서 적용)
+- **AWS Route** (도메인 구매 및 DNS 설정)
+- **HTTPS** (Cerbot 기반 SSL 인증서 적용)
+- **k6** (부하 테스트, p95 응답 시간 측정 및 성능 개선 효과 검증)
 <Br>
 
 ---
