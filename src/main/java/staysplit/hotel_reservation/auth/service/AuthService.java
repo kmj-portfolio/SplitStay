@@ -41,7 +41,10 @@ public class AuthService {
 
     public String changePassword(PasswordUpdateRequest request, String email) {
         UserEntity user = validateUser(email);
-        user.changePassword(passwordEncoder.encode(request.password()));
+        if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
+            throw new AppException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASSWORD.getMessage());
+        }
+        user.changePassword(passwordEncoder.encode(request.newPassword()));
         return "비밀번호가 변경되었습니다.";
     }
 
