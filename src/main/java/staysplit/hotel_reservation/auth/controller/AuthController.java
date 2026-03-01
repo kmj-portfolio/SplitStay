@@ -96,7 +96,7 @@ public class AuthController {
     }
 
 
-    @GetMapping("/auth/status")
+    @GetMapping("/status")
     public Response<UserLoginStatusResponse> getUserLoginStatus(@AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null) {
             throw new AppException(ErrorCode.USER_NOT_LOGGED_IN, ErrorCode.USER_NOT_FOUND.getMessage());
