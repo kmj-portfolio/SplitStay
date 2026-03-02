@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/like-lists")
+@RequestMapping("/api/likes")
 public class LikeListController {
     private final LikeListService likeListService;
 
@@ -48,7 +48,7 @@ public class LikeListController {
     }
 
     // 사용자의 모든 좋아요 목록 조회
-    @GetMapping("/customers")
+    @GetMapping("/my")
     public Response<List<LikeListCollectionResponse>> findAllLikeListByCustomer(Authentication authentication) {
         List<LikeListCollectionResponse> response = likeListService.findAllByCustomer(authentication.getName());
         return Response.success(response);
