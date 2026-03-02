@@ -57,7 +57,14 @@ public enum ErrorCode {
     ITEM_ALREADY_IN_CART(HttpStatus.CONFLICT, "이미 장바구니에 담긴 방입니다"),
     CART_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 장바구니 입니다"),
     CART_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "징바구니에 존재하지 않는 상품입니다"),
-    UNAUTHORIZED_CUSTOMER(HttpStatus.UNAUTHORIZED, "사용자가 권한이 없습니다");
+    UNAUTHORIZED_CUSTOMER(HttpStatus.UNAUTHORIZED, "사용자가 권한이 없습니다"),
+
+    // LikeList
+    LIKE_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 좋아요 목록입니다."),
+    LIKE_LIST_PARTICIPANT_NOT_FOUND(HttpStatus.NOT_FOUND, "목록에 참여하고 있지 않은 사용자 입니다"),
+    HOTEL_NOT_IN_LIKE_LIST(HttpStatus.NOT_FOUND, "좋아요에 존재하지 않는 호텔입니다"),
+    HOTEL_ALREADY_IN_LIKE_LIST(HttpStatus.CONFLICT, "이미 좋아요한 호텔입니다."),
+    SAME_EMAIL_AS_OWNER(HttpStatus.CONFLICT, "사용자가 자신의 이메일 주소를 입력했습니다.");
 
     private HttpStatus httpStatus;
     private String message;

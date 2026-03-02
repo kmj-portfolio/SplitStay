@@ -1,26 +1,26 @@
-package staysplit.hotel_reservation.like.domain.entity;
+package staysplit.hotel_reservation.likeList.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 import staysplit.hotel_reservation.customer.domain.entity.CustomerEntity;
 
 @Entity
-@Builder
 @Getter
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class LikeListEntity {
+@AllArgsConstructor
+public class LikeListCustomer {
     @Id
-    @Column(name = "like_list_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "like_list_customer_id")
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
     private CustomerEntity customer;
 
-    @Setter
-    @Column(name = "list_name", nullable = false)
-    private String listName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "like_list_id", nullable = false)
+    private LikeListEntity likeList;
 
 }
