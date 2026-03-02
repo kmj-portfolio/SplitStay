@@ -45,6 +45,7 @@ public class SecurityConfig {
             "/api/rooms/**",
             "/api/reviews/**",
             "/api/likelist/**",
+            "/api/photos/**"
     };
 
     private final String[] OAUTH_ENDPOINTS  = {
@@ -101,7 +102,7 @@ public class SecurityConfig {
 
         // TODO: 추가적으로 배포 url이 나오면 추가
 
-        configuration.setAllowedOrigins(Arrays.asList("https://localhost:5173","http://localhost:3000", appDomain));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173","http://localhost:3000", appDomain));
         configuration.setAllowedMethods(Arrays.asList("*")); // 모든 http method 허용
         configuration.setAllowedHeaders(Arrays.asList("*")); // 모든 http header 허용
         configuration.setAllowCredentials(true); // Authorization header 허용
