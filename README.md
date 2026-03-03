@@ -20,7 +20,7 @@
 <br>
 
 ## API Documentation
-https://splitnstay.com/swagger-ui/index.html
+https://api.splitnstay.com/swagger-ui/index.html
 
 <br>
 
