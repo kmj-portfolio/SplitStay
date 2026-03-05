@@ -138,7 +138,7 @@ class UserServiceTest {
             given(userRepository.findByEmail(testEmail)).willReturn(Optional.of(testUser));
             given(passwordEncoder.encode(newPassword)).willReturn("newEncodedPassword");
 
-            String result = userService.changePassword(new PasswordUpdateRequest(newPassword), testEmail);
+            String result = userService.changePassword(new PasswordUpdateRequest(rawPassword, newPassword), testEmail);
 
             assertThat(result).isEqualTo("비밀번호가 변경되었습니다.");
             then(userRepository).should().findByEmail(testEmail);
@@ -154,7 +154,7 @@ class UserServiceTest {
             given(userRepository.findByEmail(nonexistentEmail)).willReturn(Optional.empty());
 
             assertThatThrownBy(() -> userService.changePassword(
-                    new PasswordUpdateRequest(newPassword), nonexistentEmail))
+                    new PasswordUpdateRequest(rawPassword, newPassword), nonexistentEmail))
                     .isInstanceOf(AppException.class)
                     .hasMessageContaining(ErrorCode.USER_NOT_FOUND.getMessage());
 
