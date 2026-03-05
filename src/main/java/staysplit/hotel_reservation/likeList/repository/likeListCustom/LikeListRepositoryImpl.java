@@ -29,7 +29,7 @@ public class LikeListRepositoryImpl implements LikeListCustomRepository {
                  .leftJoin(likeList.participants, participant)
                 .where(
                         customer.id.eq(customerId)
-                                .or(participant.id.eq(customerId)))
+                                .or(participant.customer.id.eq(customerId)))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
