@@ -2,6 +2,8 @@ package staysplit.hotel_reservation.likeList.controller;
 
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import staysplit.hotel_reservation.common.entity.Response;
@@ -20,7 +22,8 @@ public class LikeListController {
 
     // 목록 조회
     @GetMapping("/{listId}")
-    public Response<LikeListDetailResponse> getLikeList(Authentication authentication, @PathVariable Integer listId) {
+    public Response<LikeListDetailResponse> getLikeList(@PathVariable Integer listId,
+                                                        Authentication authentication) {
         LikeListDetailResponse response = likeListService.getLikeList(authentication.getName(), listId);
         return Response.success(response);
     }
@@ -47,10 +50,10 @@ public class LikeListController {
         return Response.success("목록 이름이 변경되었습니다.");
     }
 
-    // 사용자의 모든 좋아요 목록 조회
+    // 사용자가 소유하거나 참여한 모든 좋아요 목록 조회
     @GetMapping("/my")
-    public Response<List<LikeListCollectionResponse>> findAllLikeListByCustomer(Authentication authentication) {
-        List<LikeListCollectionResponse> response = likeListService.findAllByCustomer(authentication.getName());
+    public Response<Page<LikeListCollectionResponse>> findAllLikeListByCustomer(Authentication authentication, Pageable pageable) {
+        Page<LikeListCollectionResponse> response = likeListService.findAllByCustomer(authentication.getName(), pageable);
         return Response.success(response);
     }
 }

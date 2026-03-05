@@ -9,7 +9,7 @@ import staysplit.hotel_reservation.likeList.service.LikeListCustomerService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/like-lists")
+@RequestMapping("/api/likes")
 public class LikeListCustomerController {
 
     private final LikeListCustomerService likeListCustomerService;

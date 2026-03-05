@@ -44,10 +44,14 @@ public class LikeListCustomerService {
         LikeListEntity likeList = likeListValidator.validateLikeListAndLoadCustomers(listId);
         if (likeList.getOwner().equals(customer)) {
             likeListRepository.delete(likeList);
-        } else if (!likeList.getParticipants().contains(customer)) {
-            throw new AppException(ErrorCode.UNAUTHORIZED_CUSTOMER, ErrorCode.UNAUTHORIZED_CUSTOMER.getMessage());
         } else {
-            likeList.getParticipants().remove(customer);
+            LikeListCustomer targetParticipant = likeList.getParticipants().stream()
+                    .filter(participant -> participant.getCustomer().equals(customer))
+                    .findFirst()
+                    .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_CUSTOMER, "좋아요 목록의 참여자가 아닙니다."));
+
+            // 찾은 사용자를 목록에서 제거하기
+            likeList.getParticipants().remove(targetParticipant);
         }
     }
 

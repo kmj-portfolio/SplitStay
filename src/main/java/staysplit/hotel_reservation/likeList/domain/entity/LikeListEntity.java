@@ -21,12 +21,14 @@ public class LikeListEntity {
     @Column(nullable = false)
     private String listName;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_user_id", nullable = false)
     private CustomerEntity owner;
 
     @Builder.Default
     @OneToMany(mappedBy = "likeList", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LikeListCustomer> participants = new ArrayList<>();
+
     @Builder.Default
     @OneToMany(mappedBy = "likeList", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LikeListHotelEntity> hotels = new ArrayList<>();

@@ -1,5 +1,7 @@
 package staysplit.hotel_reservation.likeList.repository.likeListCustom;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import staysplit.hotel_reservation.likeList.domain.entity.LikeListEntity;
 
@@ -8,8 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface LikeListCustomRepository {
-    Optional<LikeListEntity> findByIdWithCustomersAndHotels(Integer likeListId);
 
-    List<LikeListEntity> findByCustomerIdWithCustomersAndHotels(Integer customerId);
-
+    Page<LikeListEntity> findByCustomerIdAsOwnerAndParticipant(Integer customerId, Pageable pageable);
 }

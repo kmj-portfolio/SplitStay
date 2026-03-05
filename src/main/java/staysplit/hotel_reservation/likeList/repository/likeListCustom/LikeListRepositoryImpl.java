@@ -2,15 +2,15 @@ package staysplit.hotel_reservation.likeList.repository.likeListCustom;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import staysplit.hotel_reservation.customer.domain.entity.QCustomerEntity;
-import staysplit.hotel_reservation.hotel.entity.QHotelEntity;
 import staysplit.hotel_reservation.likeList.domain.entity.LikeListEntity;
 import staysplit.hotel_reservation.likeList.domain.entity.QLikeListCustomer;
 import staysplit.hotel_reservation.likeList.domain.entity.QLikeListEntity;
-import staysplit.hotel_reservation.likeList.domain.entity.QLikeListHotelEntity;
 
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 public class LikeListRepositoryImpl implements LikeListCustomRepository {
@@ -18,35 +18,32 @@ public class LikeListRepositoryImpl implements LikeListCustomRepository {
     private final JPAQueryFactory queryFactory;
 
     QLikeListEntity likeList = QLikeListEntity.likeListEntity;
-    QLikeListCustomer participant = QLikeListCustomer.likeListCustomer;
-    QLikeListHotelEntity likeListHotel = QLikeListHotelEntity.likeListHotelEntity;
-    QHotelEntity hotel = QHotelEntity.hotelEntity;
     QCustomerEntity customer = QCustomerEntity.customerEntity;
-    @Override
-    public Optional<LikeListEntity> findByIdWithCustomersAndHotels(Integer likeListId) {
-        LikeListEntity result = queryFactory
-                .selectFrom(likeList)
-                .leftJoin(likeList.hotels, likeListHotel)
-                .leftJoin(likeListHotel.hotel, hotel)
-                .leftJoin(likeList.participants, participant)
-                .leftJoin(participant.customer, customer)
-                .where(likeList.id.eq(likeListId))
-                .distinct()
-                .fetchOne();
-
-        return Optional.ofNullable(result);
-    }
+    QLikeListCustomer participant = QLikeListCustomer.likeListCustomer;
 
     @Override
-    public List<LikeListEntity> findByCustomerIdWithCustomersAndHotels(Integer customerId) {
-        return queryFactory
+    public Page<LikeListEntity> findByCustomerIdAsOwnerAndParticipant(Integer customerId, Pageable pageable) {
+         List<LikeListEntity> content = queryFactory
                 .selectFrom(likeList)
-                .leftJoin(likeList.hotels, likeListHotel)
-                .leftJoin(likeListHotel.hotel, hotel)
-                .leftJoin(likeList.participants, participant)
-                .leftJoin(participant.customer, customer)
-                .where(customer.id.eq(customerId))
+                .leftJoin(likeList.owner, customer).fetchJoin()
+                 .leftJoin(likeList.participants, participant)
+                .where(
+                        customer.id.eq(customerId)
+                                .or(participant.id.eq(customerId)))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
+         Long total = queryFactory
+                 .select(likeList.count())
+                 .from(likeList)
+                 .leftJoin(likeList.owner, customer)
+                 .leftJoin(likeList.participants, participant)
+                 .where(
+                         customer.id.eq(customerId)
+                         .or(participant.id.eq(customerId)))
+                 .fetchOne();
+
+         return new PageImpl<>(content, pageable, total);
     }
 }

@@ -19,4 +19,5 @@ public interface LikeListRepository extends JpaRepository<LikeListEntity, Intege
             " WHERE ll.id = :id")
     Optional<LikeListEntity> findByIdWithCustomers(@Param("id") Integer id);
 
+    Optional<LikeListEntity> findById(Integer id);
 }

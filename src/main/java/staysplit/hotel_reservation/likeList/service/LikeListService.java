@@ -1,6 +1,8 @@
 package staysplit.hotel_reservation.likeList.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import staysplit.hotel_reservation.customer.domain.entity.CustomerEntity;
@@ -25,7 +27,7 @@ public class LikeListService {
 
     public LikeListDetailResponse getLikeList(String email, Integer listId) {
         CustomerEntity customer = customerValidator.validateCustomerByEmail(email);
-        LikeListEntity likeList = likeListValidator.validateLikeListAndLoadCustomersAndHotels(listId);
+        LikeListEntity likeList = likeListValidator.validateLikeList(listId);
         likeListValidator.hasAuthority(likeList, customer);
         return mapper.toDetailResponse(likeList);
 
@@ -57,9 +59,9 @@ public class LikeListService {
         likeList.changeListName(listName);
     }
 
-    public List<LikeListCollectionResponse> findAllByCustomer(String email) {
+    public Page<LikeListCollectionResponse> findAllByCustomer(String email, Pageable pageable) {
         CustomerEntity customer = customerValidator.validateCustomerByEmail(email);
-        List<LikeListEntity> listCollection = likeListRepository.findByCustomerIdWithCustomersAndHotels(customer.getId());
+        Page<LikeListEntity> listCollection = likeListRepository.findByCustomerIdAsOwnerAndParticipant(customer.getId(), pageable);
         return mapper.toCollectionResponse(listCollection);
     }
 }

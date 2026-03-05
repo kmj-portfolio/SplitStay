@@ -37,15 +37,14 @@ public class LikeListMapper {
                 .build();
     }
 
-    public List<LikeListCollectionResponse> toCollectionResponse(List<LikeListEntity> list) {
-        return list.stream()
+    public Page<LikeListCollectionResponse> toCollectionResponse(Page<LikeListEntity> list) {
+        return list
                 .map(ll -> LikeListCollectionResponse.builder()
                         .likeListId(ll.getId())
                         .listName(ll.getListName())
                         .ownerNickname(ll.getOwner().getNickname())
                         .numberOfParticipants(ll.getParticipants().size())
-                        .build())
-                .toList();
+                        .build());
     }
 
 

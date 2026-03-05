@@ -30,11 +30,6 @@ public class LikeListValidator {
                 .orElseThrow(() -> new AppException(ErrorCode.LIKE_LIST_NOT_FOUND, ErrorCode.LIKE_LIST_NOT_FOUND.getMessage()));
     }
 
-    public LikeListEntity validateLikeListAndLoadCustomersAndHotels(Integer listId) {
-        return likeListRepository.findByIdWithCustomersAndHotels(listId)
-                .orElseThrow(() -> new AppException(ErrorCode.LIKE_LIST_NOT_FOUND, ErrorCode.LIKE_LIST_NOT_FOUND.getMessage()));
-    }
-
     public boolean isOwner(LikeListEntity likeList, CustomerEntity customer) {
         if (likeList.getOwner().equals(customer)) {
             return true;
