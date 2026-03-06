@@ -29,7 +29,6 @@ public class SecurityConfig {
     private final JwtTokenFilter jwtTokenFilter;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-    // TODO: LIKELIST ENDPOINT가 변경 전
     private final String[] PUBLIC_POST_ENDPOINTS = {
             "/api/customers/sign-up",
             "/api/providers/sign-up",
@@ -37,16 +36,15 @@ public class SecurityConfig {
             "/api/auth/refresh",
             "/api/auth/logout",
             "/api/reviews/**",
-            "/api/likelist/**",
+            "/api/likes/**",
             "/api/hotels/search"
     };
 
-    // TODO: LIKELIST ENDPOINT가 변경 전
     private final String[] PUBLIC_GET_ENDPOINTS = {
             "/api/hotels/**",
             "/api/rooms/**",
             "/api/reviews/**",
-            "/api/likelist/**",
+            "/api/likes/**",
             "/api/photos/**"
     };
 
