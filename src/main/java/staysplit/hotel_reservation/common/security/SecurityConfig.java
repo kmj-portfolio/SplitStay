@@ -76,7 +76,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, OAUTH_GET_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/hotels/*", "/api/rooms/*").hasRole("PROVIDER")
+                        .requestMatchers(HttpMethod.POST, "/api/hotels/*", "/api/rooms/*", "/api/photos", "/api/photos/*").hasRole("PROVIDER")
                         .requestMatchers(HttpMethod.PUT, "/api/hotels/*", "/api/rooms/*").hasRole("PROVIDER")
                         .requestMatchers(HttpMethod.DELETE, "/api/hotels/*", "/api/rooms/*").hasRole("PROVIDER")
                         .requestMatchers(HttpMethod.PUT, "/api/reviews/*").permitAll()
