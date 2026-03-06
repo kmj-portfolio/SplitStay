@@ -75,7 +75,9 @@ jobs:
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
             GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
             REPO_NAME_GITHUB=${{ secrets.REPO_NAME_GITHUB }}
-            APP_DOMAIN=${{ secrets.APP_DOMAIN }}
+            FRONTEND_URL=${{ secrets.FRONTEND_URL }}
+            HOST_VOLUME_UPLOAD_DIR=${{ secrets.HOST_VOLUME_UPLOAD_DIR }}
+            FILE_UPLOAD_DIR=${{ secrets.FILE_UPLOAD_DIR }}
             EOF
 
             docker compose pull

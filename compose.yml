@@ -9,6 +9,8 @@ services:
       SPRING_AUTOCONFIGURE_EXCLUDE: org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
     env_file:
       - .env
+    volumes:
+      - ${HOST_VOLUME_UPLOAD_DIR}:/app/uploads
     depends_on:
       redis-server:
         condition: service_healthy
@@ -22,6 +24,8 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
       - 3306:3306
+    volumes:
+      - mysql_data_volume:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping"]
       interval: 5s
@@ -35,3 +39,6 @@ services:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       retries: 10
+
+volumes:
+  mysql_data_volume:
