@@ -23,12 +23,13 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Value("${app.domain}")
-    private String appDomain;
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
 
     private final JwtTokenFilter jwtTokenFilter;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
+    // TODO: LIKELIST ENDPOINT가 변경 전
     private final String[] PUBLIC_POST_ENDPOINTS = {
             "/api/customers/sign-up",
             "/api/providers/sign-up",
@@ -40,6 +41,7 @@ public class SecurityConfig {
             "/api/hotels/search"
     };
 
+    // TODO: LIKELIST ENDPOINT가 변경 전
     private final String[] PUBLIC_GET_ENDPOINTS = {
             "/api/hotels/**",
             "/api/rooms/**",
@@ -100,9 +102,7 @@ public class SecurityConfig {
     public CorsConfigurationSource configurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // TODO: 추가적으로 배포 url이 나오면 추가
-
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173","http://localhost:3000", appDomain));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173","http://localhost:3000", frontendUrl));
         configuration.setAllowedMethods(Arrays.asList("*")); // 모든 http method 허용
         configuration.setAllowedHeaders(Arrays.asList("*")); // 모든 http header 허용
         configuration.setAllowCredentials(true); // Authorization header 허용

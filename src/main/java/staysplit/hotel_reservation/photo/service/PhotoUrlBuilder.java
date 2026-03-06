@@ -8,7 +8,7 @@ public class PhotoUrlBuilder {
 
     private final String basedUrl;
 
-    public PhotoUrlBuilder(@Value("${app.base-url}") String basedUrl) {
+    public PhotoUrlBuilder(@Value("${app.backend-url}") String basedUrl) {
         this.basedUrl = basedUrl;
     }
 

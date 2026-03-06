@@ -44,7 +44,6 @@ spring:
             user-name-attribute: sub
 
 
-
 oauth:
   google:
     client-id: xxxx
@@ -68,9 +67,8 @@ file:
   dir: ${FILE_UPLOAD_DIR:/app/uploads}
 
 app:
-  # TODO: change this when you apply HTTPS
-  base-url: http://${EC2_HOST:localhost}:8080
-  domain: ${APP_DOMAIN:http://localhost:5173}
+  backend-url: ${BACKEND_URL:http://localhost:8080}
+  frontend-url: ${FRONTEND_URL:http://localhost:5173}
 
 logging:
   level:
