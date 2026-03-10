@@ -12,7 +12,6 @@ import staysplit.hotel_reservation.hotel.dto.response.*;
 import staysplit.hotel_reservation.hotel.entity.HotelEntity;
 import staysplit.hotel_reservation.hotel.mapper.HotelMapper;
 import staysplit.hotel_reservation.hotel.repository.HotelRepository;
-import staysplit.hotel_reservation.photo.service.PhotoUrlBuilder;
 import staysplit.hotel_reservation.provider.domain.entity.ProviderEntity;
 import staysplit.hotel_reservation.provider.repository.ProviderRepository;
 
@@ -28,7 +27,6 @@ public class HotelService {
 
     private final HotelRepository hotelRepository;
     private final ProviderRepository providerRepository;
-    private final PhotoUrlBuilder photoUrlBuilder;
     private final HotelMapper mapper;
     private final RoomRepository roomRepository;
 
@@ -54,13 +52,13 @@ public class HotelService {
     @Transactional(readOnly = true)
     public GetHotelDetailResponse getHotelDetails(Integer hotelId) {
         HotelEntity hotel = getHotelOrThrow(hotelId);
-        return mapper.toDetailResponse(hotel, photoUrlBuilder);
+        return mapper.toDetailResponse(hotel);
     }
 
     @Transactional(readOnly = true)
     public Page<GetHotelListResponse> getHotelList(Pageable pageable) {
         Page<HotelEntity> hotelPage = hotelRepository.findAll(pageable);
-        return hotelPage.map(hotel -> mapper.toListResponse(hotel, photoUrlBuilder));
+        return hotelPage.map(hotel -> mapper.toListResponse(hotel));
     }
 
     public GetHotelDetailResponse updateHotel(Integer hotelId, UpdateHotelRequest request, String providerEmail) {
@@ -70,7 +68,7 @@ public class HotelService {
         verifyOwnership(hotel, provider);
 
         hotel.updateHotel(request);
-        return mapper.toDetailResponse(hotel, photoUrlBuilder);
+        return mapper.toDetailResponse(hotel);
     }
 
     public DeleteHotelResponse deleteHotel(Integer hotelId, String email) {

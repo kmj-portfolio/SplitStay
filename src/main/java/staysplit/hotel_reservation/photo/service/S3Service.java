@@ -27,23 +27,23 @@ public class S3Service {
             "image/jpeg", "image/png", "image/webp"
     );
 
-    public void upload(String key, MultipartFile file) throws IOException {
+    public void upload(String storedFileName, MultipartFile file) throws IOException {
 
         if (!ALLOWED_CONTENT_TYPES.contains(file.getContentType())) {
             throw new AppException(ErrorCode.INVALID_FILE_TYPE, ErrorCode.INVALID_FILE_TYPE.getMessage());
         }
 
-        s3Template.upload(bucket, key, file.getInputStream(),
+        s3Template.upload(bucket, storedFileName, file.getInputStream(),
                 io.awspring.cloud.s3.ObjectMetadata.builder()
                         .contentType(file.getContentType())
                         .build());
     }
 
-    public void delete(String key) {
-        s3Template.deleteObject(bucket, key);
+    public void delete(String storedFileName) {
+        s3Template.deleteObject(bucket, storedFileName);
     }
 
-    public String getS3Url(String key) {
-        return "https://" + bucket + ".s3." + region + ".amazonaws.com/" + key;
+    public String getS3Url(String storedFileName) {
+        return "https://" + bucket + ".s3." + region + ".amazonaws.com/" + storedFileName;
     }
 }

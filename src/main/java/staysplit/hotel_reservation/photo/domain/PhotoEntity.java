@@ -6,7 +6,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import staysplit.hotel_reservation.hotel.entity.HotelEntity;
 import staysplit.hotel_reservation.photo.domain.enums.DisplayType;
-import staysplit.hotel_reservation.photo.service.PhotoUrlBuilder;
 import staysplit.hotel_reservation.room.domain.RoomEntity;
 
 import java.time.LocalDateTime;
@@ -46,10 +45,6 @@ public class PhotoEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DisplayType displayType;
-
-    public String buildFullUrl(PhotoUrlBuilder builder) {
-        return builder.buildPhotoUrl(this.storedFileName);
-    }
 
     public boolean isMainPhoto() {
         return displayType == DisplayType.MAIN;

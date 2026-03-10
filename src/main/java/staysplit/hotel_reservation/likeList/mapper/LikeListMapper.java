@@ -9,7 +9,6 @@ import staysplit.hotel_reservation.hotel.mapper.HotelMapper;
 import staysplit.hotel_reservation.likeList.dto.response.LikeListCollectionResponse;
 import staysplit.hotel_reservation.likeList.dto.response.LikeListDetailResponse;
 import staysplit.hotel_reservation.likeList.domain.entity.LikeListEntity;
-import staysplit.hotel_reservation.photo.service.PhotoUrlBuilder;
 
 import java.util.List;
 
@@ -18,13 +17,12 @@ import java.util.List;
 public class LikeListMapper {
 
     private final HotelMapper hotelMapper;
-    private final PhotoUrlBuilder urlBuilder;
 
     // N + 1 (get Customer entity)
     public LikeListDetailResponse toDetailResponse(LikeListEntity likeList) {
 
         List<GetHotelListResponse> hotelList = likeList.getHotels().stream()
-                .map(h -> hotelMapper.toListResponse(h.getHotel(), urlBuilder))
+                .map(h -> hotelMapper.toListResponse(h.getHotel()))
                 .toList();
 
         Page<GetHotelListResponse> page = new PageImpl<>(hotelList);

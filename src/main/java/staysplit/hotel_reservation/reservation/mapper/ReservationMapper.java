@@ -3,7 +3,7 @@ package staysplit.hotel_reservation.reservation.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import staysplit.hotel_reservation.hotel.entity.HotelEntity;
-import staysplit.hotel_reservation.photo.service.PhotoUrlBuilder;
+import staysplit.hotel_reservation.photo.service.S3Service;
 import staysplit.hotel_reservation.reservation.dto.response.*;
 import staysplit.hotel_reservation.reservation.domain.entity.ReservationEntity;
 import staysplit.hotel_reservation.reservation.domain.entity.ReservationParticipantEntity;
@@ -16,7 +16,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReservationMapper {
 
-    private final PhotoUrlBuilder photoUrlBuilder;
+    private final S3Service s3Service;
+
     public ReservationDetailResponse toReservationDetailResponse(ReservationEntity reservation) {
         HotelEntity hotel = reservation.getHotel();
 
@@ -34,7 +35,7 @@ public class ReservationMapper {
                 .hotelName(hotel.getName())
                 .hotelAddress(hotel.getAddress())
                 .hotelMainImageUrl(
-                        hotel.getMainPhoto().isPresent() ? hotel.getMainPhoto().get().buildFullUrl(photoUrlBuilder) : null)
+                        hotel.getMainPhoto().isPresent() ? s3Service.getS3Url(hotel.getMainPhoto().get().getStoredFileName()) : null)
                 .build();
     }
 
@@ -74,7 +75,7 @@ public class ReservationMapper {
                 .hotelName(hotel.getName())
                 .hotelAddress(hotel.getAddress())
                 .hotelMainImageUrl(
-                        hotel.getMainPhoto().isPresent() ? hotel.getMainPhoto().get().buildFullUrl(photoUrlBuilder) : null
+                        hotel.getMainPhoto().isPresent() ? s3Service.getS3Url(hotel.getMainPhoto().get().getStoredFileName()) : null
                 )
                 .build();
     }

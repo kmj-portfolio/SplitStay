@@ -6,10 +6,13 @@ public record PhotoDetailResponse(
         Integer photoId,
         String displayType,
         String uploadedFileName,
-        String savedFileName
+        String photoUrl
 ) {
-    public static PhotoDetailResponse from(PhotoEntity photo) {
-        return new PhotoDetailResponse(photo.getId(), photo.getDisplayType().toString(),
-                photo.getUploadFileName(), photo.getStoredFileName());
+    public static PhotoDetailResponse from(PhotoEntity photo, String photoUrl) {
+        return new PhotoDetailResponse(
+                photo.getId(),
+                photo.getDisplayType().toString(),
+                photo.getUploadFileName(),
+                photoUrl);
     }
 }

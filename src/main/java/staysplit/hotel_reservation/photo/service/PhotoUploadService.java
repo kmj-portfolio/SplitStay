@@ -2,7 +2,6 @@ package staysplit.hotel_reservation.photo.service;
 
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,9 +18,7 @@ import staysplit.hotel_reservation.provider.service.ProviderValidator;
 import staysplit.hotel_reservation.room.domain.RoomEntity;
 import staysplit.hotel_reservation.room.service.RoomValidator;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -84,7 +81,7 @@ public class PhotoUploadService {
             throw new AppException(ErrorCode.INVALID_ENTITY_TYPE, ErrorCode.INVALID_ENTITY_TYPE.getMessage());
         }
 
-        return PhotoDetailResponse.from(photo);
+        return PhotoDetailResponse.from(photo, s3Service.getS3Url(photo.getStoredFileName()));
     }
 
     // 사진 삭제
