@@ -43,6 +43,20 @@ spring:
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
             user-name-attribute: sub
 
+  cloud:
+    aws:
+      s3:
+        bucket: ${AWS_S3_BUCKET}
+      region:
+        static: ${AWS_REGION}
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
 
 oauth:
   google:
@@ -61,10 +75,6 @@ jwt:
 iamport:
   api-key: ${IAMPORT_API_KEY}
   secret: ${IAMPORT_SECRET}
-
-file:
-  # dir: "C:/Users/...사진 저장할 주소"
-  dir: ${FILE_UPLOAD_DIR:/app/uploads}
 
 app:
   backend-url: ${BACKEND_URL:http://localhost:8080}

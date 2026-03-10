@@ -1,10 +1,7 @@
 package staysplit.hotel_reservation.photo.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,7 +10,6 @@ import staysplit.hotel_reservation.photo.dto.response.PhotoDetailResponse;
 import staysplit.hotel_reservation.photo.service.PhotoUploadService;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.List;
 
 @RestController
@@ -43,18 +39,6 @@ public class PhotoController {
         List<PhotoDetailResponse> responseList = photoUploadService.uploadPhotos(
                 authentication.getName(), entityType, entityId, displayTypes, multipartFiles);
         return Response.success(responseList);
-    }
-
-    // 이미지 조회
-    @ResponseBody
-    @GetMapping("/{filename}")
-    public ResponseEntity<Resource> downloadImage(@PathVariable String filename) throws MalformedURLException {
-        UrlResource resource = new UrlResource("file:" + photoUploadService.getFullPath(filename));
-        String contentType = "image/jpeg";
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .body(resource);
     }
 
     // 이미지 삭제
