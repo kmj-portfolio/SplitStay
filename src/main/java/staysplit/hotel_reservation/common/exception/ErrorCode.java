@@ -52,6 +52,7 @@ public enum ErrorCode {
     INVALID_ENTITY_TYPE(HttpStatus.NOT_FOUND, "올바른 Entity Type을 입력해주세요 (HOTEL, ROOM)"),
     PHOTO_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사진입니다."),
     EXCEEDED_PHOTO_LIMIT(HttpStatus.CONFLICT, "사진은 5개까지만 등록할 수 있습니다."),
+    INVALID_FILE_TYPE(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "이미지 파일만 업로드 가능합니다."),
 
     // Cart
     ITEM_ALREADY_IN_CART(HttpStatus.CONFLICT, "이미 장바구니에 담긴 방입니다"),

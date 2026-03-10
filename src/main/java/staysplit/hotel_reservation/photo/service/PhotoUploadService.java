@@ -32,13 +32,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PhotoUploadService {
 
-    @Value("${file.dir}")
-    private String fileDir;
-
     private final PhotoRepository photoRepository;
     private final ProviderValidator providerValidator;
     private final HotelValidator hotelValidator;
     private final RoomValidator roomValidator;
+    private final S3Service s3Service;
 
     public List<PhotoDetailResponse> uploadPhotos(String email, String entityType, Integer entityId, List<String> displayType,
                                                   List<MultipartFile> multipartFiles) throws IOException {
@@ -58,7 +56,8 @@ public class PhotoUploadService {
         String originalFileName = multipartFile.getOriginalFilename();
         String storedFileName = createStoredFileName(originalFileName);
 
-        multipartFile.transferTo(new File(getFullPath(storedFileName)));
+        // multipartFile.transferTo(new File(getFullPath(storedFileName)));
+        s3Service.upload(storedFileName, multipartFile);
 
         DisplayType displayType = DisplayType.from(displayTypeValue);
 
@@ -88,16 +87,12 @@ public class PhotoUploadService {
         return PhotoDetailResponse.from(photo);
     }
 
-    // 사진 조회
-    public String getFullPath(String filename) {
-        //return fileDir + filename;
-        return Paths.get(fileDir, filename).toString();
-    }
-
     // 사진 삭제
     public void deletePhoto(String filename) {
         PhotoEntity photo = photoRepository.findByStoredFileName(filename)
                 .orElseThrow(() -> new AppException(ErrorCode.PHOTO_NOT_FOUND, ErrorCode.PHOTO_NOT_FOUND.getMessage()));
+
+        s3Service.delete(filename);
 
         if (photo.isHotelPhoto()) {
             photo.getHotel().getPhotos().remove(photo);
