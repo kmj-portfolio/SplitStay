@@ -77,7 +77,6 @@ portone:
     secret: ${PORTONE_API_SECRET}
 
 app:
-  backend-url: ${BACKEND_URL:http://localhost:8080}
   frontend-url: ${FRONTEND_URL:http://localhost:5173}
 
 logging:
