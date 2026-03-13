@@ -39,7 +39,6 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
 
 
     // customer id, Reservation Status, 특정 Local Date 이후로 검색 가능
-    // TODO: 특정 날짜 이후의 모든 예약을 조회하는 게 이상함. 어떻게 바꿀까? date range?
     @Override
     public Page<ReservationEntity> findReservationsByCustomerWithFilters(Integer customerId,
                                                                           ReservationStatus status,
@@ -63,12 +62,13 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
                 .distinct()
                 .join(reservation.participants, participant)
                 .where(booleanBuilder)
+                .orderBy(reservation.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
         Long total = queryFactory
-                .select(reservation.count())
+                .select(reservation.countDistinct())
                 .from(reservation)
                 .join(reservation.participants, participant)
                 .where(booleanBuilder)
