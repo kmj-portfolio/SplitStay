@@ -1,44 +1,43 @@
 package staysplit.hotel_reservation.payment.controller;
 
-import com.siot.IamportRestClient.IamportClient;
-import com.siot.IamportRestClient.exception.IamportResponseException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import staysplit.hotel_reservation.payment.domain.dto.request.CancelPaymentRequest;
 import staysplit.hotel_reservation.payment.domain.dto.request.CreatePaymentRequest;
-import staysplit.hotel_reservation.payment.domain.dto.response.CreatePaymentResponse;
-import staysplit.hotel_reservation.payment.domain.dto.response.ErrorResponse;
+import staysplit.hotel_reservation.payment.domain.dto.response.PaymentResponse;
 import staysplit.hotel_reservation.payment.service.PaymentService;
 import staysplit.hotel_reservation.common.entity.Response;
 
-import java.io.IOException;
-import java.util.List;
-
+@Slf4j
 @RestController
 @RequestMapping("/api/payments")
 @RequiredArgsConstructor
 public class PaymentController {
+
     private final PaymentService paymentService;
 
-    private final IamportClient iamportClient;
-
     @PostMapping("/verify")
-    public Response<?> verifyAndCreate(@RequestBody CreatePaymentRequest request) {
-        try {
-            CreatePaymentResponse response = paymentService.verifyAndCreatePayment(request);
-            return Response.success(response);
-        } catch (IamportResponseException e) {
-            return Response.error(new ErrorResponse("아임포트 API 오류: " + e.getMessage()));
-        } catch (IllegalStateException e) {
-            return Response.error(new ErrorResponse("결제 검증 실패: " + e.getMessage()));
-        } catch (Exception e) {
-            return Response.error(new ErrorResponse("결제 검증 중 알 수 없는 오류가 발생했습니다."));
-        }
+    public Response<PaymentResponse> verifyAndCreate(Authentication authentication, @RequestBody CreatePaymentRequest request) {
+        PaymentResponse response = paymentService.verifyAndCreatePayment(authentication.getName(), request);
+        log.info("[결제 검증 완료]");
+        return Response.success(response);
     }
 
-    @GetMapping("/customers/{customerId}")
-    public Response<List<CreatePaymentResponse>> getPaymentsByCustomer(@PathVariable Long customerId) {
-        List<CreatePaymentResponse> payments = paymentService.getPaymentsByCustomer(customerId);
-        return Response.success(payments);
+    @PostMapping("/cancel")
+    public Response<String> cancelPayment(Authentication authentication, @RequestBody CancelPaymentRequest request) {
+        paymentService.cancelPayment(authentication.getName(), request);
+        return Response.success("결제가 취소되었습니다.");
+    }
+
+
+    @GetMapping("/my")
+    public Response<Page<PaymentResponse>> getPaymentsByCustomer(Authentication authentication, Pageable pageable) {
+        Page<PaymentResponse> responses = paymentService.getPaymentsByCustomer(authentication.getName(), pageable);
+        return Response.success(responses);
     }
 
 }

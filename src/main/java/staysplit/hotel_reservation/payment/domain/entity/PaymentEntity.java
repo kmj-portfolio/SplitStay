@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter(AccessLevel.PACKAGE)
 @Builder
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
@@ -30,20 +29,15 @@ public class PaymentEntity {
     @JoinColumn(name = "reservation_id", nullable = false)
     ReservationEntity reservation;
 
-//    @Column(unique = true)
-//    private String merchantUid; // 가맹점 UID
-
     @Column(unique = true)
-    private String impUid; // 아임포트 UID
+    private String portOnePaymentId;
 
-    @Column
     private String payMethod;
 
-    @Column
-    private String payName;
+    private String cardPublisherName;
 
     @Column(nullable = false)
-    private Integer amount;
+    private Long amount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -52,4 +46,8 @@ public class PaymentEntity {
     @CreatedDate
     @Column(name = "paid_at", updatable = false)
     private LocalDateTime paidAt;
+
+    public void updateStatus(PaymentStatus status) {
+        this.status = status;
+    }
 }

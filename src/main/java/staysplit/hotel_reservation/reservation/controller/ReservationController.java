@@ -24,7 +24,7 @@ public class ReservationController {
     private final ReservationService reservationService;
     private final ReservationQueryService reservationQueryService;
 
-    @GetMapping()
+    @GetMapping
     public Response<Page<ReservationListResponse>> findAllReservationsByCustomer(Authentication authentication,
                                                                                  @Param(value = "status") ReservationStatus status,
                                                                                  @Param(value = "afterDate") LocalDate afterDate,
@@ -33,7 +33,7 @@ public class ReservationController {
         return Response.success(responseList);
     }
 
-    @PostMapping()
+    @PostMapping
     public Response<ReservationDetailResponse> makeTempReservation(Authentication authentication, @RequestBody CreateReservationRequest request) {
         ReservationDetailResponse response = reservationService.makeTempReservation(authentication.getName(), request);
         return Response.success(response);

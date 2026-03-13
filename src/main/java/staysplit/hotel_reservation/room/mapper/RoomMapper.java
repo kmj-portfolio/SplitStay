@@ -1,5 +1,6 @@
 package staysplit.hotel_reservation.room.mapper;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import staysplit.hotel_reservation.photo.domain.PhotoEntity;
 import staysplit.hotel_reservation.photo.service.S3Service;
@@ -10,9 +11,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class RoomMapper {
 
-    private S3Service s3Service;
+    private final S3Service s3Service;
 
     public RoomInfoResponse toRoomInfoResponse(RoomEntity room) {
 

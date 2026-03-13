@@ -72,9 +72,9 @@ jwt:
   access-expiration-minutes: 15
   refresh-expiration-days: 14
 
-iamport:
-  api-key: ${IAMPORT_API_KEY}
-  secret: ${IAMPORT_SECRET}
+portone:
+  api:
+    secret: ${PORTONE_API_SECRET}
 
 app:
   backend-url: ${BACKEND_URL:http://localhost:8080}

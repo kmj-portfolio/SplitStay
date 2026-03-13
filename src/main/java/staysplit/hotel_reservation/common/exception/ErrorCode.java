@@ -3,7 +3,6 @@ package staysplit.hotel_reservation.common.exception;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import retrofit2.http.HTTP;
 
 @Getter
 @AllArgsConstructor
@@ -37,7 +36,8 @@ public enum ErrorCode {
     DUPLICATE_PAYMENT(HttpStatus.CONFLICT, "이미 처리된 결제입니다."),
     INVALID_PAYMENT(HttpStatus.BAD_REQUEST, "결제 정보를 찾을 수 없습니다."),
     PAYMENT_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST, "결제 금액이 일치하지 않습니다."),
-    INVALID_PAYMENT_STATUS(HttpStatus.BAD_REQUEST, "결제가 완료되지 않았습니다."),
+    PAYMENT_INCOMPLETE(HttpStatus.BAD_REQUEST, "결제가 완료되지 않았습니다."),
+    PAYMENT_ALREADY_CANCELLED(HttpStatus.CONFLICT, "이미 취소된 결제입니다."),
 
     // Reservation
     INVALID_CHECKOUT_DATE(HttpStatus.CONFLICT, "체크아웃 날짜는 체크인 날짜보다 이후여야 합니다."),
