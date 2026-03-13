@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ErrorResponse {
-    private String status;
+    private String errorCode;
     private String message;
 
     public static ErrorResponse from(AppException e) {
         return new ErrorResponse(
-                e.getErrorCode().getHttpStatus().toString(),
+                e.getErrorCode().name(),
                 e.getMessage()
         );
     }

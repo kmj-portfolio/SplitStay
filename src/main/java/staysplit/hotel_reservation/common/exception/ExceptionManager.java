@@ -12,7 +12,7 @@ public class ExceptionManager {
     public ResponseEntity<?> appExceptionHandler(AppException e) {
         return ResponseEntity
                 .status(e.getErrorCode().getHttpStatus())
-                .body(Response.error(e));
+                .body(Response.error(ErrorResponse.from(e)));
     }
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> runtimeExceptionHandler(RuntimeException e) {
