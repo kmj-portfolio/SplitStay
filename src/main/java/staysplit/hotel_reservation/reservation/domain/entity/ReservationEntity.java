@@ -44,15 +44,15 @@ public class ReservationEntity {
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReservationParticipantEntity> participants = new ArrayList<>();
 
-    private Integer totalPrice;
+    private Long totalPrice;
 
-    @Column(nullable = false)
     @Builder.Default
-    private Integer pricePaid = 0;
+    @Column(nullable = false)
+    private Long pricePaid = 0L;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    @Builder.Default
     private ReservationStatus status = ReservationStatus.WAITING_PAYMENT;
 
     @CreationTimestamp
@@ -77,11 +77,11 @@ public class ReservationEntity {
         this.status = status;
     }
 
-    public void updatePricePaid(Integer amount) {
+    public void updatePricePaid(Long amount) {
         this.pricePaid += amount;
     }
 
-    public void updateTotalPrice(Integer totalPrice) {
+    public void updateTotalPrice(Long totalPrice) {
         this.totalPrice = totalPrice;
     }
 }

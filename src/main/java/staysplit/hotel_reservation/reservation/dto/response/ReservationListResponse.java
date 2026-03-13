@@ -13,7 +13,7 @@ public record ReservationListResponse(
         String hotelAddress,
         LocalDate checkInDate,
         LocalDate checkOutDate,
-        Integer totalPrice,
+        Long totalPrice,
         String reservationStatus,
         Integer numberOfParticipants
 ) {

@@ -9,7 +9,6 @@ public record ReservedRoomDetailResponse (
         Integer quantity,
         Integer pricePerNight,
         Integer nights,
-        Integer subTotal
-        // TODO: main image url
+        Long subTotal
 ) {
 }

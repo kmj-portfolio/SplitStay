@@ -12,7 +12,7 @@ public record ReservationListResponseForProvider(
         Integer nights,
         LocalDate checkInDate,
         LocalDate checkOutDate,
-        Integer totalPrice,
+        Long totalPrice,
         String reservationStatus,
         List<String> participantNames,
         Integer numberOfParticipants

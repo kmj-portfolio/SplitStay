@@ -14,8 +14,8 @@ public record ReservationDetailResponse(
     LocalDate checkOut,
     Integer nights,
     List<ParticipantDetailResponse> participants,
-    Integer totalPrice,
-    Integer pricePaid,
+    Long totalPrice,
+    Long pricePaid,
 
     // 호텔 정보
     String hotelName,
@@ -25,4 +25,4 @@ public record ReservationDetailResponse(
     // 방 정보
     List<ReservedRoomDetailResponse> rooms
 
-    ) { }
+    ) {}

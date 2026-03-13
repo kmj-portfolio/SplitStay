@@ -65,13 +65,13 @@ public class ReservationService {
         reservationRepository.save(reservation);
 
         // 방 예약 (ReservedRoomEntity 생성 후 저장)
-        int totalPrice = reserveRooms(request, reservation, nights, checkin, checkout);
+        long totalPrice = reserveRooms(request, reservation, nights, checkin, checkout);
         reservation.updateTotalPrice(totalPrice);
 
         // 참여자 리스트 (자신 + 초대한 사람)
         List<String> participantEmails = prepareParticipantEmails(email, request);
 
-        Integer splitAmount = totalPrice / participantEmails.size();
+        long splitAmount = totalPrice / participantEmails.size();
 
         // 참여자 emails -> ParticipantEntity 로 저장
         saveParticipants(reservation, participantEmails, splitAmount);
@@ -103,7 +103,7 @@ public class ReservationService {
         reservation.updateStatus(ReservationStatus.CANCELLED);
     }
 
-    private void saveParticipants(ReservationEntity reservation, List<String> participantEmails, Integer splitAmount) {
+    private void saveParticipants(ReservationEntity reservation, List<String> participantEmails, long splitAmount) {
         for (String emailOfParticipant : participantEmails) {
             CustomerEntity participantCustomer = customerValidator.validateCustomerByEmail(emailOfParticipant);
 
@@ -128,9 +128,9 @@ public class ReservationService {
         return participantEmails;
     }
 
-    private int reserveRooms(CreateReservationRequest request, ReservationEntity reservation, int nights,
-                             LocalDate checkin, LocalDate checkout) {
-        int totalPrice = 0;
+    private long reserveRooms(CreateReservationRequest request, ReservationEntity reservation, int nights,
+                              LocalDate checkin, LocalDate checkout) {
+        long totalPrice = 0L;
 
         // 요청된 방 하나씩 예약
         for (RoomReservationRequest roomDto : request.roomsAndQuantities()) {
@@ -145,7 +145,7 @@ public class ReservationService {
             }
 
             // subtotal 계산
-            int subtotal = room.getPrice() * roomDto.quantity() * nights;
+            long subtotal = (long) room.getPrice() * roomDto.quantity() * nights;
             totalPrice += subtotal;
 
             // Room Entity로 저장
@@ -168,7 +168,6 @@ public class ReservationService {
     private String generateReservationNumber() {
         return "RES" + System.currentTimeMillis();
      }
-
 
     private int calculateNights(LocalDate checkIn, LocalDate checkOut) {
         int nights = (int) ChronoUnit.DAYS.between(checkIn, checkOut);

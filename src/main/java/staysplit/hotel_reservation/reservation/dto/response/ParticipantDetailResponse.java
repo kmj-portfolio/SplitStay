@@ -6,7 +6,7 @@ import lombok.Builder;
 public record ParticipantDetailResponse(
         String email,
         String name,
-        Integer splitAmount,
+        Long splitAmount,
         String paymentStatus
 ) {
 }

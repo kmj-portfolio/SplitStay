@@ -27,7 +27,7 @@ public class ReservationParticipantEntity {
     private CustomerEntity customer;
 
     @Column(nullable = false)
-    private Integer splitAmount;
+    private Long splitAmount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)

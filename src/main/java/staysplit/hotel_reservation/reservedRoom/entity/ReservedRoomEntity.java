@@ -33,6 +33,6 @@ public class ReservedRoomEntity {
     @Column(nullable = false)
     private Integer nights;
 
-    private Integer subtotalPrice;
+    private Long subtotalPrice;
 
 }
