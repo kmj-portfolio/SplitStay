@@ -29,7 +29,7 @@ public class SecurityConfig {
     private final JwtTokenFilter jwtTokenFilter;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-    private final String[] PUBLIC_POST_ENDPOINTS = {
+    private static final String[] PUBLIC_POST_ENDPOINTS = {
             "/api/customers/sign-up",
             "/api/providers/sign-up",
             "/api/auth/login",
@@ -40,7 +40,7 @@ public class SecurityConfig {
             "/api/hotels/search"
     };
 
-    private final String[] PUBLIC_GET_ENDPOINTS = {
+    private static final String[] PUBLIC_GET_ENDPOINTS = {
             "/api/hotels/**",
             "/api/rooms/**",
             "/api/reviews/**",
@@ -48,7 +48,7 @@ public class SecurityConfig {
             "/api/photos/**"
     };
 
-    private final String[] OAUTH_ENDPOINTS  = {
+    private static final String[] OAUTH_ENDPOINTS  = {
             "/oauth2/authorization/google",
             "/login/oauth2/code/**",
             "/api/customers/google/login",
@@ -57,9 +57,38 @@ public class SecurityConfig {
             "/api/oauth/**"
     };
 
-    private final String[] OAUTH_GET_ENDPOINTS  = {
+    private static final String[] OAUTH_GET_ENDPOINTS  = {
             "/api/customers/google/callback",
             "/api/customers/kakao/callback",
+    };
+
+    private static final String[] CUSTOMER_GET_ENDPOINTS = {
+            "/api/customers/**",
+            "/api/reservations",
+            "/api/reservations/**",
+            "/api/likes/**",
+            "/api/payments/**"
+    };
+
+    private static final String[] CUSTOMER_POST_ENDPOINTS = {
+            "/api/customers/**",
+            "/api/reservations",
+            "/api/reservations/**",
+            "/api/reviews/**",
+            "/api/likes/**",
+            "/api/payments/**",
+    };
+
+    private static final String[] CUSTOMER_PUT_ENDPOINTS = {
+            "/api/customers/**",
+            "/api/reviews/**",
+            "/api/likes/**",
+    };
+
+    private static final String[] CUSTOMER_DELETE_ENDPOINTS = {
+            "/api/customers/**",
+            "/api/reviews/**",
+            "/api/likes/**",
     };
 
     @Bean
@@ -79,15 +108,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/hotels/*", "/api/rooms/*", "/api/photos", "/api/photos/*").hasRole("PROVIDER")
                         .requestMatchers(HttpMethod.PUT, "/api/hotels/*", "/api/rooms/*").hasRole("PROVIDER")
                         .requestMatchers(HttpMethod.DELETE, "/api/hotels/*", "/api/rooms/*").hasRole("PROVIDER")
-                        .requestMatchers(HttpMethod.PUT, "/api/reviews/*").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/api/reviews/*").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/reservations/**").hasRole("CUSTOMER")
-                        .requestMatchers(HttpMethod.GET, "/api/reservations/**").hasRole("CUSTOMER")
-                        .requestMatchers(HttpMethod.PUT, "/api/likelist/**").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/api/likelist/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, CUSTOMER_GET_ENDPOINTS).hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.PUT, CUSTOMER_PUT_ENDPOINTS).hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.POST, CUSTOMER_POST_ENDPOINTS).hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.DELETE, CUSTOMER_DELETE_ENDPOINTS).hasRole("CUSTOMER")
                         .requestMatchers("/api/users/auth/status").permitAll()
-
                         .anyRequest().authenticated())
+
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
 
                 // Customized spring security error handling
