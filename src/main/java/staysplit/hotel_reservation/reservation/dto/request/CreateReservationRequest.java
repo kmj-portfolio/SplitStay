@@ -12,7 +12,7 @@ public record CreateReservationRequest(
         List<RoomReservationRequest> roomsAndQuantities,
         LocalDate checkInDate,
         LocalDate checkOutDate,
-        List<String> invitedEmails,
+        List<String> nicknames,
         Boolean isSplitPayment
 
 ) {

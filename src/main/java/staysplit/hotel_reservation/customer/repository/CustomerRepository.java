@@ -18,4 +18,6 @@ public interface CustomerRepository extends JpaRepository<CustomerEntity, Intege
 
     @Query("SELECT c.nickname FROM CustomerEntity c")
     List<String> findAllUsernames();
+
+    Optional<CustomerEntity> findByNickname(String nickname);
 }

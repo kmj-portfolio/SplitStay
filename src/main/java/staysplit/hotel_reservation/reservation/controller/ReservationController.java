@@ -33,6 +33,13 @@ public class ReservationController {
         return Response.success(responseList);
     }
 
+    @GetMapping("/{reservationId}")
+    public Response<ReservationDetailResponse> findReservationById(Authentication authentication,
+                                                                    @PathVariable Integer reservationId) {
+        ReservationDetailResponse response = reservationQueryService.findReservationByReservationId(authentication.getName(), reservationId);
+        return Response.success(response);
+    }
+
     @PostMapping
     public Response<ReservationDetailResponse> makeTempReservation(Authentication authentication, @RequestBody CreateReservationRequest request) {
         ReservationDetailResponse response = reservationService.makeTempReservation(authentication.getName(), request);

@@ -77,6 +77,7 @@ public class ReservationMapper {
                 .hotelMainImageUrl(
                         hotel.getMainPhoto().isPresent() ? s3Service.getS3Url(hotel.getMainPhoto().get().getStoredFileName()) : null
                 )
+                .numberOfParticipants(reservation.getParticipants().size())
                 .build();
     }
 

@@ -81,7 +81,7 @@ public class CheckOutService {
     }
 
     private CreateReservationRequest createReservationRequest(ReservationKey key,
-                                                              List<String> invitedEmails,
+                                                              List<String> invitedNicknames,
                                                               List<RoomReservationRequest> roomRequests,
                                                               Boolean isSplitPayment) {
         return CreateReservationRequest.builder()
@@ -89,7 +89,7 @@ public class CheckOutService {
                 .roomsAndQuantities(roomRequests)
                 .checkInDate(key.getCheckInDate())
                 .checkOutDate(key.getCheckOutDate())
-                .invitedEmails(invitedEmails)
+                .nicknames(invitedNicknames)
                 .isSplitPayment(isSplitPayment)
                 .build();
     }

@@ -1,6 +1,7 @@
 package staysplit.hotel_reservation.reservation.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import staysplit.hotel_reservation.common.exception.AppException;
@@ -29,7 +30,9 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -44,8 +47,12 @@ public class ReservationService {
     private final ReservationMapper mapper;
 
     public ReservationDetailResponse makeTempReservation(String email, CreateReservationRequest request) {
+        log.info("[임시 예약 시작]");
         CustomerEntity customer = customerValidator.validateCustomerByEmail(email);
         HotelEntity hotel = hotelValidator.validateHotel(request.hotelId());
+
+        // 참여자 리스트 처리 (자신 + 초대한 사람
+        List<CustomerEntity> participants = getCustomerEntityFromUsernames(customer, request);
 
         // 숙박일 수 계산
         LocalDate checkin = request.checkInDate();
@@ -68,13 +75,13 @@ public class ReservationService {
         long totalPrice = reserveRooms(request, reservation, nights, checkin, checkout);
         reservation.updateTotalPrice(totalPrice);
 
-        // 참여자 리스트 (자신 + 초대한 사람)
-        List<String> participantEmails = prepareParticipantEmails(email, request);
+        log.debug("[총 금액을 참여자 수 만큼 나누기] totalPrice={}, numberOfParticipants={}", totalPrice, participants.size());
+        long splitAmount = totalPrice / participants.size();
 
-        long splitAmount = totalPrice / participantEmails.size();
+        // CustomerEntity -> ParticipantEntity 로 저장
+        registerParticipants(reservation, participants, splitAmount);
 
-        // 참여자 emails -> ParticipantEntity 로 저장
-        saveParticipants(reservation, participantEmails, splitAmount);
+        log.info("[임시 예약 성공] reservationId={}", reservation.getId());
         return mapper.toReservationDetailResponse(reservation);
     }
 
@@ -103,29 +110,32 @@ public class ReservationService {
         reservation.updateStatus(ReservationStatus.CANCELLED);
     }
 
-    private void saveParticipants(ReservationEntity reservation, List<String> participantEmails, long splitAmount) {
-        for (String emailOfParticipant : participantEmails) {
-            CustomerEntity participantCustomer = customerValidator.validateCustomerByEmail(emailOfParticipant);
+    private void registerParticipants(ReservationEntity reservation, List<CustomerEntity> customers, long splitAmount) {
+        List<ReservationParticipantEntity> newParticipants = customers.stream()
+                .map(customer -> ReservationParticipantEntity.builder()
+                        .customer(customer)
+                        .reservation(reservation)
+                        .splitAmount(splitAmount)
+                        .paymentStatus(PaymentStatus.WAITING)
+                        .build())
+                .toList();
 
-            ReservationParticipantEntity participant = ReservationParticipantEntity.builder()
-                    .customer(participantCustomer)
-                    .reservation(reservation)
-                    .splitAmount(splitAmount)
-                    .paymentStatus(PaymentStatus.WAITING)
-                    .build();
-
-            participantRepository.save(participant);
-            reservation.addParticipant(participant);
-        }
+        newParticipants.forEach(reservation::addParticipant);
+        participantRepository.saveAll(newParticipants);
     }
 
-    private List<String> prepareParticipantEmails(String email, CreateReservationRequest request) {
-        List<String> participantEmails = new ArrayList<>();
-        participantEmails.add(email);
-        if (request.invitedEmails() != null) {
-            participantEmails.addAll(request.invitedEmails());
+    private List<CustomerEntity> getCustomerEntityFromUsernames(CustomerEntity owner, CreateReservationRequest request) {
+        List<CustomerEntity> customerEntities = new ArrayList<>();
+        if (request.nicknames() != null) {
+            customerEntities = request.nicknames().stream()
+                    .map(n -> {
+                        log.info("[참여자 추가] nickname=[}", n);
+                        return customerValidator.validateCustomerByNickname(n);
+                    }).collect(Collectors.toList());
         }
-        return participantEmails;
+        log.info("[초대된 사용자 수 = {}]", customerEntities.size());
+        customerEntities.add(owner);
+        return customerEntities;
     }
 
     private long reserveRooms(CreateReservationRequest request, ReservationEntity reservation, int nights,
