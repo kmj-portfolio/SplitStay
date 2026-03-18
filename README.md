@@ -15,6 +15,11 @@
 
 <br>
 
+
+![CI/CD Pipeline](/assets/CICD%20Pipeline.png)
+
+<br>
+
 ## ERD
 ![ERD](/assets/splitstay_erd.png)
 
