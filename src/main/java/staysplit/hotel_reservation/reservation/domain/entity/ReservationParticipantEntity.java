@@ -3,7 +3,7 @@ package staysplit.hotel_reservation.reservation.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import staysplit.hotel_reservation.customer.domain.entity.CustomerEntity;
-import staysplit.hotel_reservation.reservation.domain.enums.PaymentStatus;
+import staysplit.hotel_reservation.payment.domain.enums.PaymentStatus;
 
 @Entity
 @Getter
@@ -32,16 +32,20 @@ public class ReservationParticipantEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     @Builder.Default
-    private PaymentStatus paymentStatus = PaymentStatus.WAITING;
+    private PaymentStatus paymentStatus = PaymentStatus.READY;
 
     private String invitationToken;
 
-    public void updatePaymentStatus(PaymentStatus status) {
-        this.paymentStatus = status;
+    public void markPaid() {
+        this.paymentStatus = PaymentStatus.PAID;
+    }
+
+    public void markReady() {
+        this.paymentStatus = PaymentStatus.READY;
     }
 
     public boolean isPaid() {
-        return this.paymentStatus == PaymentStatus.COMPLETE;
+        return this.paymentStatus == PaymentStatus.PAID;
     }
 
 }

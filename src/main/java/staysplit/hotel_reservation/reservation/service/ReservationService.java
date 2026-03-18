@@ -18,7 +18,6 @@ import staysplit.hotel_reservation.reservation.domain.entity.ReservationParticip
 import staysplit.hotel_reservation.reservation.mapper.ReservationMapper;
 import staysplit.hotel_reservation.reservedRoom.entity.ReservedRoomEntity;
 import staysplit.hotel_reservation.reservation.domain.enums.ReservationStatus;
-import staysplit.hotel_reservation.reservation.domain.enums.PaymentStatus;
 import staysplit.hotel_reservation.reservation.reposiotry.ReservationParticipantRepository;
 import staysplit.hotel_reservation.reservation.reposiotry.ReservationRepository;
 import staysplit.hotel_reservation.reservedRoom.repository.ReservedRoomRepository;
@@ -89,13 +88,13 @@ public class ReservationService {
     public ReservationDetailResponse confirmReservationAfterPayment(Integer reservationId) {
         ReservationEntity reservation = validateReservation(reservationId);
 
-        for (ReservationParticipantEntity participant : reservation.getParticipants()) {
-            if (!participant.getPaymentStatus().equals(PaymentStatus.COMPLETE)) {
-                throw new AppException(ErrorCode.PAYMENT_INCOMPLETE_FOR_ALL_PARTICIPANTS,
-                        ErrorCode.PAYMENT_INCOMPLETE_FOR_ALL_PARTICIPANTS.getMessage());
-            }
+        boolean allPaid = reservation.getParticipants().stream()
+                        .allMatch(p -> p.isPaid());
+
+        if (!allPaid) {
+            throw new AppException(ErrorCode.PAYMENT_INCOMPLETE_FOR_ALL_PARTICIPANTS);
         }
-        reservation.updateStatus(ReservationStatus.CONFIRMED);
+        reservation.markConfirmed();
         return mapper.toReservationDetailResponse(reservation);
     }
 
@@ -107,7 +106,7 @@ public class ReservationService {
         if (reservation.getStatus() == ReservationStatus.CANCELLED) {
             throw new AppException(ErrorCode.RESERVATION_NOT_FOUND, "이미 취소된 예약입니다.");
         }
-        reservation.updateStatus(ReservationStatus.CANCELLED);
+        reservation.markCancelled();
     }
 
     private void registerParticipants(ReservationEntity reservation, List<CustomerEntity> customers, long splitAmount) {
@@ -116,7 +115,6 @@ public class ReservationService {
                         .customer(customer)
                         .reservation(reservation)
                         .splitAmount(splitAmount)
-                        .paymentStatus(PaymentStatus.WAITING)
                         .build())
                 .toList();
 
@@ -145,13 +143,13 @@ public class ReservationService {
         // 요청된 방 하나씩 예약
         for (RoomReservationRequest roomDto : request.roomsAndQuantities()) {
             RoomEntity room = roomRepository.findByIdWithLock(roomDto.roomId())
-                    .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND, ErrorCode.ROOM_NOT_FOUND.getMessage()));
+                    .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
             // 이 방이 지정된 체크아웃과 체크인 날자 동안 재고가 있는지 확인
             int reservedCount = reservedRoomRepository.countReservedRoomsForDateRange(room.getId(), checkin, checkout);
             int available = room.getTotalQuantity() - reservedCount;
             if (available < roomDto.quantity()) {
-                throw new AppException(ErrorCode.INSUFFICIENT_ROOM_STOCK, ErrorCode.INSUFFICIENT_ROOM_STOCK.getMessage());
+                throw new AppException(ErrorCode.INSUFFICIENT_ROOM_STOCK);
             }
 
             // subtotal 계산
@@ -182,20 +180,20 @@ public class ReservationService {
     private int calculateNights(LocalDate checkIn, LocalDate checkOut) {
         int nights = (int) ChronoUnit.DAYS.between(checkIn, checkOut);
         if (nights <= 0) {
-            throw new AppException(ErrorCode.INVALID_CHECKOUT_DATE, ErrorCode.INVALID_CHECKOUT_DATE.getMessage());
+            throw new AppException(ErrorCode.INVALID_CHECKOUT_DATE);
         }
         return nights;
     }
 
     private ReservationEntity validateReservation(Integer reservationId) {
         return reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new AppException(ErrorCode.RESERVATION_NOT_FOUND, ErrorCode.RESERVATION_KEY_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new AppException(ErrorCode.RESERVATION_NOT_FOUND));
 
     }
 
     private RoomEntity validateRoomById(Integer roomId) {
         return roomRepository.findById(roomId)
-                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND, ErrorCode.ROOM_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
     }
 
 }

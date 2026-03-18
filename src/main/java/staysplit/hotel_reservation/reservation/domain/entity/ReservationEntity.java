@@ -24,6 +24,18 @@ public class ReservationEntity {
     @Column(name = "reservation_id")
     private Integer id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hotel_id", nullable = false)
+    private HotelEntity hotel;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReservedRoomEntity> reservedRooms = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReservationParticipantEntity> participants = new ArrayList<>();
+
     @Column(nullable = false, unique = true, length = 50)
     private String reservationNumber;
 
@@ -36,20 +48,13 @@ public class ReservationEntity {
     @Column(nullable = false)
     private LocalDate checkOutDate;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ReservedRoomEntity> reservedRooms = new ArrayList<>();
-
-    @Builder.Default
-    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ReservationParticipantEntity> participants = new ArrayList<>();
-
     private Long totalPrice;
 
     @Builder.Default
     @Column(nullable = false)
     private Long pricePaid = 0L;
 
+    @Getter
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -61,10 +66,6 @@ public class ReservationEntity {
     @Column(nullable = false)
     private LocalDateTime expiresAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "hotel_id", nullable = false)
-    private HotelEntity hotel;
-
     public void addReservedRoom(ReservedRoomEntity reservedRoom) {
         reservedRooms.add(reservedRoom);
     }
@@ -73,15 +74,35 @@ public class ReservationEntity {
         participants.add(participant);
     }
 
-    public void updateStatus(ReservationStatus status) {
-        this.status = status;
+    public void handleCancelledPayment(long amount) {
+        this.pricePaid -= amount;
+
+        if (this.status == ReservationStatus.CONFIRMED) {
+            this.status = ReservationStatus.WAITING_PAYMENT;
+        }
     }
 
-    public void updatePricePaid(Long amount) {
+    public void addPricePaid(long amount) {
         this.pricePaid += amount;
     }
 
     public void updateTotalPrice(Long totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public void markConfirmed() {
+        this.status = ReservationStatus.CONFIRMED;
+    }
+
+    public void markCancelled() {
+        this.status = ReservationStatus.CANCELLED;
+    }
+
+    public void markExpired() {
+        this.status = ReservationStatus.EXPIRED;
+    }
+
+    public boolean isComplete() {
+        return this.status == ReservationStatus.COMPLETE;
     }
 }

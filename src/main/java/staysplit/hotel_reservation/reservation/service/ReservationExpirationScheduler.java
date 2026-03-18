@@ -26,7 +26,7 @@ public class ReservationExpirationScheduler {
                 reservationRepository.findAllByStatusAndExpiresAtBefore(ReservationStatus.WAITING_PAYMENT, now);
 
         for (ReservationEntity reservation : expiredReservations) {
-            reservation.updateStatus(ReservationStatus.EXPIRED);
+            reservation.markExpired();
         }
     }
 }
