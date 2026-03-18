@@ -5,7 +5,9 @@ on:
     branches: [ main ]
 
     paths-ignore:
+      - '**.md'
       - 'README.md'
+      - 'assets/**'
 
 env:
   IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/hotel-reservation-backend
