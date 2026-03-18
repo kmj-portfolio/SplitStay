@@ -1,9 +1,9 @@
 spring:
-  datasource:
-    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
-    url: jdbc:p6spy:mysql://mysql-server:3306/${MYSQL_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8
-    username: root
-    password: ${MYSQL_ROOT_PASSWORD}
+  profiles:
+    active : local
+
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
 
   jpa:
     database: mysql
@@ -17,13 +17,10 @@ spring:
 
   data:
     redis:
-      host: redis-server
+      host: localhost
       port: 6379
       repositories:
         enabled: false
-
-      autoconfigure:
-        exclude: org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
 
   security:
     oauth2:
@@ -83,6 +80,5 @@ logging:
   level:
     root: INFO
     org.springframework.security: DEBUG
-    #staysplit.hotel_reservation: DEBUG
     p6spy: INFO
     com.p6spy: INFO

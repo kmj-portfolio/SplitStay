@@ -66,23 +66,21 @@ jobs:
             umask 077
             cat > .env <<'EOF'
             EC2_HOST=${{ secrets.EC2_HOST }}
-            MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+            DB_HOST=${{ secrets.DB_HOST }}
             MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
+            DB_USERNAME=${{ secrets.DB_USERNAME }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
-            IAMPORT_API_KEY=${{ secrets.IAMPORT_API_KEY }}
-            IAMPORT_SECRET=${{ secrets.IAMPORT_SECRET }}
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
             GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
             REPO_NAME_GITHUB=${{ secrets.REPO_NAME_GITHUB }}
             FRONTEND_URL=${{ secrets.FRONTEND_URL }}
-            HOST_VOLUME_UPLOAD_DIR=${{ secrets.HOST_VOLUME_UPLOAD_DIR }}
-            FILE_UPLOAD_DIR=${{ secrets.FILE_UPLOAD_DIR }}
             AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}
             AWS_REGION=${{ secrets.AWS_REGION }}
             AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
             AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
-            PORTONE_API_SECRET=${{ secrets.PORTONE_API_SECRET }
+            PORTONE_API_SECRET=${{ secrets.PORTONE_API_SECRET }}
             EOF
 
             docker compose pull
