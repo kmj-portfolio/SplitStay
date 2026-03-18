@@ -10,7 +10,8 @@
 <br>
 
 ## System Architecture
-![System Architecture](/assets/system_architecture.jpeg)
+
+![System Architecture](/assets/System_Architecture.png)
 
 <br>
 
