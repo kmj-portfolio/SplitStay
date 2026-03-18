@@ -5,15 +5,22 @@ import staysplit.hotel_reservation.payment.domain.dto.response.CancelPaymentResp
 import staysplit.hotel_reservation.payment.domain.dto.response.PaymentResponse;
 import staysplit.hotel_reservation.payment.domain.entity.PaymentEntity;
 import staysplit.hotel_reservation.reservation.domain.entity.ReservationEntity;
+import staysplit.hotel_reservation.payment.domain.dto.response.CreatePaymentResponse;
 
 @Component
 public class PaymentMapper {
 
+    public CreatePaymentResponse toCreatePaymentResponse(PaymentEntity payment) {
+        return new CreatePaymentResponse(
+                payment.getPaymentId(),
+                payment.getAmount());
+    }
+
     public PaymentResponse toPaymentResponse(PaymentEntity paymentEntity) {
-        ReservationEntity reservation = paymentEntity.getReservation();
+        ReservationEntity reservation = paymentEntity.getReservationParticipant().getReservation();
 
         return PaymentResponse.builder()
-                .portOnePaymentId(paymentEntity.getPortOnePaymentId())
+                .paymentId(paymentEntity.getPaymentId())
                 .paymentAmount(paymentEntity.getAmount())
                 .status(paymentEntity.getStatus())
                 .payMethod(paymentEntity.getPayMethod())
@@ -27,6 +34,9 @@ public class PaymentMapper {
 
     public CancelPaymentResponse toCancelPaymentResponse(PaymentEntity paymentEntity) {
 
-        return new CancelPaymentResponse(paymentEntity.getPortOnePaymentId(), paymentEntity.getStatus().toString(), paymentEntity.getAmount());
+        return new CancelPaymentResponse(
+                paymentEntity.getPaymentId(),
+                paymentEntity.getStatus().toString(),
+                paymentEntity.getAmount());
     }
 }
