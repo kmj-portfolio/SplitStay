@@ -7,10 +7,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import staysplit.hotel_reservation.payment.domain.dto.request.CancelPaymentRequest;
+import staysplit.hotel_reservation.payment.domain.dto.request.CreatePaymentRequest;
 import staysplit.hotel_reservation.payment.domain.dto.request.VerifyPaymentRequest;
 import staysplit.hotel_reservation.payment.domain.dto.response.PaymentResponse;
 import staysplit.hotel_reservation.payment.service.PaymentFacade;
 import staysplit.hotel_reservation.common.entity.Response;
+import staysplit.hotel_reservation.payment.service.PaymentTransactionService;
 
 @Slf4j
 @RestController
@@ -19,9 +21,16 @@ import staysplit.hotel_reservation.common.entity.Response;
 public class PaymentController {
 
     private final PaymentFacade paymentFacade;
+    private final PaymentTransactionService paymentTransactionService;
 
-    @PostMapping("/verify")
-    public Response<PaymentResponse> verifyAndCreate(Authentication authentication, @RequestBody VerifyPaymentRequest request) {
+    @PostMapping
+    public Response<PaymentResponse> createPayment(Authentication authentication, @RequestBody CreatePaymentRequest request) {
+        PaymentResponse response = paymentTransactionService.createPayment(authentication.getName(), request);
+        return Response.success(response);
+    }
+
+    @PostMapping("/verifications")
+    public Response<PaymentResponse> verifyPGPayment(Authentication authentication, @RequestBody VerifyPaymentRequest request) {
         PaymentResponse response = paymentFacade.verifyPayment(authentication.getName(), request);
         log.info("[결제 검증 완료]");
         return Response.success(response);

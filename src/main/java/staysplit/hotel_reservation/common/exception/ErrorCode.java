@@ -33,16 +33,19 @@ public enum ErrorCode {
     UNAUTHORIZED_REVIEWER(HttpStatus.UNAUTHORIZED, "리뷰 작성자가 아닙니다."),
 
     // Payment
-    DUPLICATE_PAYMENT(HttpStatus.CONFLICT, "이미 처리된 결제입니다."),
     INVALID_PAYMENT(HttpStatus.BAD_REQUEST, "결제 정보를 찾을 수 없습니다."),
     PAYMENT_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST, "결제 금액이 일치하지 않습니다."),
     PAYMENT_INCOMPLETE(HttpStatus.BAD_REQUEST, "결제가 완료되지 않았습니다."),
     PAYMENT_ALREADY_CANCELLED(HttpStatus.CONFLICT, "이미 취소된 결제입니다."),
+    CANCEL_PAYMENT_FAILED(HttpStatus.BAD_GATEWAY, "결제는 성공했지만, 서버에서 처리를 실패 한 후에 자동 취소에도 실패했습니다."),
+    PAYMENT_RESERVATION_MISMATCH(HttpStatus.BAD_REQUEST, "결제 내역과 예약 내역이 일치하지 않습니다."),
+    PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "결제 내역을 찾을 수 없습니다."),
+    BOOKING_ALREADY_CONSUMED(HttpStatus.CONFLICT, "이미 숙박은 완료하여 환불이 불가합니다."),
 
     // Reservation
     INVALID_CHECKOUT_DATE(HttpStatus.CONFLICT, "체크아웃 날짜는 체크인 날짜보다 이후여야 합니다."),
     RESERVATION_KEY_NOT_FOUND(HttpStatus.NOT_FOUND, "유효하지 않은 결제 정보입니다."),
-    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND.NOT_FOUND, "존재하지 않는 예약입니다."),
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 예약입니다."),
     RESERVED_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "예약하지 않은 방입니다."),
     INSUFFICIENT_ROOM_STOCK(HttpStatus.CONFLICT, "방 재고가 부족합니다."),
     PAYMENT_INCOMPLETE_FOR_ALL_PARTICIPANTS(HttpStatus.UNAUTHORIZED, "모든 참여자들이 결제를 완료하지 않았습니다."),
@@ -65,7 +68,9 @@ public enum ErrorCode {
     LIKE_LIST_PARTICIPANT_NOT_FOUND(HttpStatus.NOT_FOUND, "목록에 참여하고 있지 않은 사용자 입니다"),
     HOTEL_NOT_IN_LIKE_LIST(HttpStatus.NOT_FOUND, "좋아요에 존재하지 않는 호텔입니다"),
     HOTEL_ALREADY_IN_LIKE_LIST(HttpStatus.CONFLICT, "이미 좋아요한 호텔입니다."),
-    SAME_EMAIL_AS_OWNER(HttpStatus.CONFLICT, "사용자가 자신의 이메일 주소를 입력했습니다.");
+    SAME_EMAIL_AS_OWNER(HttpStatus.CONFLICT, "사용자가 자신의 이메일 주소를 입력했습니다."),
+
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에서 오류가 발생했습니다.");
 
     private HttpStatus httpStatus;
     private String message;
