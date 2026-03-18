@@ -62,7 +62,7 @@ public class CustomerServiceTest {
     private String name;
     private LocalDate birthdate;
     private String testEmail;
-    private String nonexistentEmail;
+    private String phoneNumber;
     private String rawPassword;
     private String encodedPassword;
     private String testNickname;
@@ -73,8 +73,8 @@ public class CustomerServiceTest {
     void setUp() {
         name = "Test User";
         testEmail = "test@example.com";
-        nonexistentEmail = "nonexistent@example.com";
         birthdate = LocalDate.of(1990, 1, 1);
+        phoneNumber = "01012345678";
         rawPassword = "12345";
         encodedPassword = "encodedPassword";
         testNickname = "testNickname";
@@ -104,6 +104,7 @@ public class CustomerServiceTest {
                     testEmail,
                     rawPassword,
                     name,
+                    phoneNumber,
                     birthdate,
                     testNickname);
 
@@ -155,6 +156,7 @@ public class CustomerServiceTest {
                     "duplicateEmail@exmaple.com",
                     rawPassword,
                     name,
+                    phoneNumber,
                     birthdate,
                     testNickname);
 
@@ -182,6 +184,7 @@ public class CustomerServiceTest {
                     testEmail,
                     rawPassword,
                     name,
+                    phoneNumber,
                     birthdate,
                     "duplicateNickname");
 

@@ -30,6 +30,9 @@ public class CustomerEntity {
     @Column(nullable = false)
     private LocalDate birthdate;
 
+    @Column(length = 11, nullable = false)
+    private String phoneNumber;
+
     @Setter
     @Column(length = 30, unique = true)
     private String nickname;

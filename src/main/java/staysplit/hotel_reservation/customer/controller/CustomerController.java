@@ -1,7 +1,7 @@
 package staysplit.hotel_reservation.customer.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import staysplit.hotel_reservation.common.entity.Response;
@@ -26,7 +26,7 @@ public class CustomerController {
 
     // 일반 회원가입
     @PostMapping("/sign-up")
-    public Response<CustomerDetailsResponse> signup(@RequestBody CustomerSignupRequest request) {
+    public Response<CustomerDetailsResponse> signup(@Valid @RequestBody CustomerSignupRequest request) {
         CustomerDetailsResponse customerDetailsResponse = customerService.signup(request);
         return Response.success(customerDetailsResponse);
     }
