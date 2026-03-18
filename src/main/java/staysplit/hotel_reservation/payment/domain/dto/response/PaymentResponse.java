@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Builder
 public record PaymentResponse(
-        String portOnePaymentId,
+        String paymentId,
         Long paymentAmount,
         String payMethod,
         String cardPublisher,

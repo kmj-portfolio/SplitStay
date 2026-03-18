@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record PortOnePaymentResponse(
         String id,
+        String paymentId,
         String status,
         Amount amount,
         Method method
