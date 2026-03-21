@@ -18,8 +18,6 @@ import staysplit.hotel_reservation.provider.repository.ProviderRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import staysplit.hotel_reservation.room.repository.RoomRepository;
-
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -28,7 +26,6 @@ public class HotelService {
     private final HotelRepository hotelRepository;
     private final ProviderRepository providerRepository;
     private final HotelMapper mapper;
-    private final RoomRepository roomRepository;
 
     public CreateHotelResponse createHotel(CreateHotelRequest request, String providerEmail) {
         ProviderEntity provider = validateProvider(providerEmail);

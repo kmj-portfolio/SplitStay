@@ -8,3 +8,11 @@ spring:
   data:
     redis:
       host: redis-server
+
+oauth:
+  google:
+    redirect-uri: https://${FRONTEND_URL}}/api/auth/google/callback
+
+app:
+  init:
+    enabled: true

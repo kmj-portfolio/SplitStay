@@ -1,9 +1,11 @@
 package staysplit.hotel_reservation.customer.domain.dto.request;
 
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 
 import java.time.LocalDate;
 
+@Builder
 public record CustomerSignupRequest(
 
         @NotBlank(message = "이메일은 필수입니다.")

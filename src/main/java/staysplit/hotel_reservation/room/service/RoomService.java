@@ -83,7 +83,7 @@ public class RoomService {
     @Transactional(readOnly = true)
     public Page<RoomInfoResponse> findAllRoomsByHotel(Integer hotelId, Pageable pageable) {
         HotelEntity hotel = validateHotelById(hotelId);
-        Page<RoomEntity> rooms = roomRepository.findByHotel_Id(hotelId, pageable);
+        Page<RoomEntity> rooms = roomRepository.findByHotelId(hotelId, pageable);
         return rooms.map(room -> mapper.toRoomInfoResponse(room));
     }
 

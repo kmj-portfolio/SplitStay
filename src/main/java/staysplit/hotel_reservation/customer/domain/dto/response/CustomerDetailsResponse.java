@@ -8,6 +8,7 @@ public record CustomerDetailsResponse(
         Integer id,
         String email,
         String name,
+        String phoneNumber,
         LocalDate birthdate,
         String nickname) {
 
@@ -16,6 +17,7 @@ public record CustomerDetailsResponse(
                 customer.getId(),
                 customer.getUser().getEmail(),
                 customer.getName(),
+                customer.getPhoneNumber(),
                 customer.getBirthdate(),
                 customer.getNickname()
         );

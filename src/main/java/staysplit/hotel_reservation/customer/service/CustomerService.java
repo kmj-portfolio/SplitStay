@@ -51,6 +51,7 @@ public class CustomerService {
                 .user(user)
                 .name(request.name())
                 .birthdate(request.birthdate())
+                .phoneNumber(request.phoneNumber())
                 .nickname(request.nickname())
                 .build();
 
@@ -100,8 +101,7 @@ public class CustomerService {
 
         return customerRepository.findByUser(user)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, ErrorCode.USER_NOT_FOUND.getMessage()));
-//        return customerRepository.findByEmail(email)
-//                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, ErrorCode.USER_NOT_FOUND.getMessage()));
+
     }
 
 }

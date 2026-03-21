@@ -22,24 +22,6 @@ spring:
       repositories:
         enabled: false
 
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: ${GOOGLE_CLIENT_ID}
-            client-secret: ${GOOGLE_CLIENT_SECRET}
-            scope: openid email profile
-            redirect-uri: "https://localhost:8443/api/customers/google/callback"
-            #callback-uri: "https://localhost:5173/oauth/google?code="
-            authorization-grant-type: authorization_code
-        provider:
-          google:
-            authorization-uri:  https://accounts.google.com/o/oauth2/v2/auth
-            token-uri: https://oauth2.googleapis.com/token
-            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
-            user-name-attribute: sub
-
   cloud:
     aws:
       s3:
@@ -57,12 +39,10 @@ spring:
 
 oauth:
   google:
-    client-id: xxxx
-    client-secret: yyyy
-    redirect-uri: https://localhost:8443/oauth/google/redirect
-  kakao:
-    client-id: xxxx
-    redirect-uri: https://localhost:8443/oauth/kakao/redirect
+    client-id: ${GOOGLE_CLIENT_ID}
+    client-secret: ${GOOGLE_CLIENT_SECRET}
+    redirect-uri: http://localhost:5173/api/auth/google/callback
+    scope: openid email profile
 
 jwt:
   secret: ${JWT_SECRET}
@@ -82,3 +62,15 @@ logging:
     org.springframework.security: DEBUG
     p6spy: INFO
     com.p6spy: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: splitstay #Grafana에서 구분할 앱 이름
