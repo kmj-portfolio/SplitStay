@@ -14,17 +14,16 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class JwtTokenProvider {
 
-    private final String secretKey;
     private final long accessTokenExpiryMs;
     private final long refreshTokenExpiryMs;
-    private Key encodedSecretKey;
+    private final Key encodedSecretKey;
     private final StringRedisTemplate redisTemplate;
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey,
                             @Value("${jwt.access-expiration-minutes}") int accessTokenExpirationMinutes,
                             @Value("${jwt.refresh-expiration-days}") int refreshTokenExpirationDays,
                             StringRedisTemplate redisTemplate) {
-        this.secretKey = secretKey;
+
         this.accessTokenExpiryMs = accessTokenExpirationMinutes * 60 * 1000L; // 분 -> ms = 분 * 60 seconds * 1000L;
         this.refreshTokenExpiryMs = refreshTokenExpirationDays * 24 * 60 * 60 * 1000L; // 일 = 일 * 24 시간 * 60분 * 60 sec * 1000 ms
         this.encodedSecretKey = new SecretKeySpec(Base64.getDecoder().decode(secretKey),
@@ -82,7 +81,7 @@ public class JwtTokenProvider {
         try {
             // Refresh Token이 DB에 있는 경우, JWT 서명 검증 + 만료 검증
             Jws<Claims> claimsJws = Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
+                    .setSigningKey(encodedSecretKey)
                     .build()
                     .parseClaimsJws(refreshToken);
 

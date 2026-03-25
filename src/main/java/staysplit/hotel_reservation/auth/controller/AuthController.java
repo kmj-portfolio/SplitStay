@@ -19,7 +19,7 @@ import staysplit.hotel_reservation.common.exception.ErrorCode;
 import staysplit.hotel_reservation.common.security.jwt.JwtTokenProvider;
 import staysplit.hotel_reservation.auth.dto.request.LoginRequest;
 import staysplit.hotel_reservation.auth.dto.request.PasswordUpdateRequest;
-import staysplit.hotel_reservation.auth.dto.response.UserLoginResponse;
+import staysplit.hotel_reservation.auth.dto.response.LoginTokens;
 import staysplit.hotel_reservation.auth.dto.response.UserLoginStatusResponse;
 
 import java.time.Duration;
@@ -30,7 +30,6 @@ import java.time.Duration;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final JwtTokenProvider jwtTokenProvider;
     @Value("${jwt.access-expiration-minutes}")
     private int accessTokenExpiryInMinutes;
 
@@ -38,13 +37,14 @@ public class AuthController {
     private int refreshTokenExpiryInDays;
 
     private final AuthService authService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     // 일반 로그인, 소셜 로그인 아님
     // role을 반환
     @PostMapping("/login")
     public Response<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse) {
 
-        UserLoginResponse response = authService.login(loginRequest);
+        LoginTokens response = authService.login(loginRequest);
 
         // create tokens
         String accessToken = response.accessToken();
@@ -63,7 +63,7 @@ public class AuthController {
         httpServletResponse.addHeader("Set-Cookie", cookie.toString());
 
         // access token은 response body에
-        return Response.success(new LoginResponse(accessToken, "ROLE_" + response.role()));
+        return Response.success(new LoginResponse(accessToken, "ROLE_" + role));
     }
 
     // 비밀 번호 변경
@@ -99,7 +99,7 @@ public class AuthController {
     @GetMapping("/status")
     public Response<UserLoginStatusResponse> getUserLoginStatus(@AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null) {
-            throw new AppException(ErrorCode.USER_NOT_LOGGED_IN, ErrorCode.USER_NOT_FOUND.getMessage());
+            throw new AppException(ErrorCode.USER_NOT_LOGGED_IN);
         }
         String email = userDetails.getUsername();
         String role = userDetails.getAuthorities().stream()

@@ -35,6 +35,8 @@ public class SecurityConfig {
             "/api/auth/login",
             "/api/auth/refresh",
             "/api/auth/logout",
+            "/api/oauth/signup",
+            "/api/oauth/google/login",
             "/api/reviews/**",
             "/api/likes/**",
             "/api/hotels/search"
@@ -46,20 +48,6 @@ public class SecurityConfig {
             "/api/reviews/**",
             "/api/likes/**",
             "/api/photos/**"
-    };
-
-    private static final String[] OAUTH_ENDPOINTS  = {
-            "/oauth2/authorization/google",
-            "/login/oauth2/code/**",
-            "/api/customers/google/login",
-            "/api/customers/oauth/signup",
-            "/oauth/**",
-            "/api/oauth/**"
-    };
-
-    private static final String[] OAUTH_GET_ENDPOINTS  = {
-            "/api/customers/google/callback",
-            "/api/customers/kakao/callback",
     };
 
     private static final String[] CUSTOMER_GET_ENDPOINTS = {
@@ -101,8 +89,6 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/v3/**", "/swagger-ui/**").permitAll()
-                        .requestMatchers(OAUTH_ENDPOINTS).permitAll()
-                        .requestMatchers(HttpMethod.GET, OAUTH_GET_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/hotels/*", "/api/rooms/*", "/api/photos", "/api/photos/*").hasRole("PROVIDER")

@@ -11,8 +11,12 @@ spring:
 
 oauth:
   google:
-    redirect-uri: https://${FRONTEND_URL}}/api/auth/google/callback
+    redirect-uri: https://${FRONTEND_URL}/oauth/google/callback
+
+jwt:
+  cookie:
+    secure: true
 
 app:
   init:
-    enabled: true
+    enabled: false

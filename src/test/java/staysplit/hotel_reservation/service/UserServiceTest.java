@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import staysplit.hotel_reservation.auth.dto.request.LoginRequest;
 import staysplit.hotel_reservation.auth.dto.request.PasswordUpdateRequest;
-import staysplit.hotel_reservation.auth.dto.response.UserLoginResponse;
+import staysplit.hotel_reservation.auth.dto.response.LoginTokens;
 import staysplit.hotel_reservation.auth.service.AuthService;
 import staysplit.hotel_reservation.common.exception.AppException;
 import staysplit.hotel_reservation.common.exception.ErrorCode;
@@ -82,7 +82,7 @@ class UserServiceTest {
             given(jwtTokenProvider.createRefreshToken(testEmail)).willReturn(REFRESH_TOKEN);
 
             // when
-            UserLoginResponse response = userService.login(loginRequest);
+            LoginTokens response = userService.login(loginRequest);
 
             // then
             assertThat(response.accessToken()).isEqualTo(ACCESS_TOKEN);
