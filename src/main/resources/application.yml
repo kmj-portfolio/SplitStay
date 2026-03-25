@@ -52,6 +52,8 @@ jwt:
 portone:
   api:
     secret: ${PORTONE_API_SECRET}
+  webhook:
+    secret: ${PORTONE_WEBHOOK_SECRET}
 
 app:
   frontend-url: ${FRONTEND_URL:http://localhost:5173}

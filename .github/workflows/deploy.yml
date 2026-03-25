@@ -83,6 +83,7 @@ jobs:
             AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
             AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
             PORTONE_API_SECRET=${{ secrets.PORTONE_API_SECRET }}
+            PORTONE_WEBHOOK_SECRET=${{ secrets.PORTONE_WEBHOOK_SECRET }}
             EOF
 
             docker compose pull
