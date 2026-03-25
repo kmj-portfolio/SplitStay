@@ -19,4 +19,4 @@ jwt:
 
 app:
   init:
-    enabled: false
+    enabled: true
