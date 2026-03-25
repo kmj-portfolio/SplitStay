@@ -8,6 +8,8 @@ import staysplit.hotel_reservation.hotel.dto.response.GetHotelListResponse;
 import staysplit.hotel_reservation.hotel.entity.HotelEntity;
 import staysplit.hotel_reservation.photo.domain.PhotoEntity;
 import staysplit.hotel_reservation.photo.service.S3Service;
+import staysplit.hotel_reservation.room.domain.RoomEntity;
+import staysplit.hotel_reservation.room.repository.RoomRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +19,7 @@ import java.util.Optional;
 public class HotelMapper {
 
     private final S3Service s3Service;
+    private final RoomRepository roomRepository;
 
     public GetHotelDetailResponse toDetailResponse(HotelEntity hotel) {
 
@@ -46,6 +49,7 @@ public class HotelMapper {
 
     public GetHotelListResponse toListResponse(HotelEntity hotel) {
         Optional<PhotoEntity> mainPhoto = hotel.getMainPhoto();
+        List<RoomEntity> rooms = roomRepository.findByHotelId(hotel.getId());
 
         String mainUrl = mainPhoto.isPresent() ? s3Service.getS3Url(mainPhoto.get().getStoredFileName()) : null;
 
@@ -56,7 +60,12 @@ public class HotelMapper {
                 hotel.getStarLevel(),
                 hotel.getRating(),
                 hotel.getReviewCount(),
-                mainUrl
+                mainUrl,
+                rooms.stream()
+                        .mapToInt(RoomEntity::getPrice)
+                        .min()
+                        .orElse(0)
+
         );
     }
 

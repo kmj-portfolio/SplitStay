@@ -7,5 +7,6 @@ public record GetHotelListResponse(
         Integer starLevel,
         Double rating,
         Integer reviewCount,
-        String mainImageUrl
+        String mainImageUrl,
+        Integer minPrice
 ) {}
