@@ -18,6 +18,7 @@ import staysplit.hotel_reservation.payment.domain.dto.response.PortOnePaymentRes
 import staysplit.hotel_reservation.payment.domain.entity.PaymentEntity;
 import staysplit.hotel_reservation.payment.mapper.PaymentMapper;
 import staysplit.hotel_reservation.payment.repository.PaymentRepository;
+import staysplit.hotel_reservation.payment.webhook.dto.PortOneWebhookRequest;
 import staysplit.hotel_reservation.reservation.domain.entity.ReservationEntity;
 import staysplit.hotel_reservation.reservation.service.ReservationValidator;
 
@@ -56,6 +57,8 @@ public class PaymentFacade {
         paymentValidator.validatePaymentOwner(paymentEntity, customer);
 
         // 이미 존재하는 PaymentEntity가 있으면 에러 반환 대신 PaymentResponse 반환 (멱등성)
+        // TODO: ReservationParticipantId에 대한 PaymentEntitiy가 이미 있고 상태가 WAITING이거나 COMPLETE이면
+        //  같은 예약에 대해 중복 결제이기 때문에, 이것을 확인해야 함
         if (paymentEntity.isPaid()) {
             log.info("[결제 중복 요청 - 멱등성 처리] paymentId={}", paymentId);
             return paymentMapper.toPaymentResponse(paymentEntity);
