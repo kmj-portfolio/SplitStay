@@ -8,6 +8,8 @@ services:
       SERVER_SSL_ENABLED: "false"
       SPRING_DATA_REDIS_REPOSITORIES_ENABLED: "false"
       SPRING_AUTOCONFIGURE_EXCLUDE: org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+      JAVA_TOOL_OPTIONS: "-Duser.timezone=Asia/Seoul"
+      TZ: "Asia/Seoul"
 
     env_file:
       - .env
