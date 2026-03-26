@@ -52,7 +52,7 @@ public class ReservationQueryService {
     public Page<ReservationListResponseForProvider> findAllReservationsToHotel(String email, Pageable pageable,
                                                                                ReservationSearchConditionForProviders conditions) {
         ProviderEntity provider = providerValidator.validateProvider(email);
-        Page<ReservationEntity> reservations = reservationRepository.findReservationsByHotelWithFilters(provider.getId(), pageable, conditions);
+        Page<ReservationEntity> reservations = reservationRepository.findReservationsByHotelWithFilters(provider.getHotel().getId(), pageable, conditions);
         return reservations.map(mapper::toListResponseForProvider);
     }
 }

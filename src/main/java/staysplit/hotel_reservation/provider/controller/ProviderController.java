@@ -39,9 +39,9 @@ public class ProviderController {
     }
 
     // 호텔의 모든 예약 조회
-    @GetMapping("/reservations")
+    @PostMapping("/reservations")
     public Response<Page<ReservationListResponseForProvider>> findAllReservations(@RequestBody ReservationSearchConditionForProviders conditions,
-                                                                                  @PageableDefault(size = 10, sort = "checkInDate", direction = Sort.Direction.DESC) Pageable pageable,
+                                                                                  @PageableDefault(size = 10, sort = "checkInStart", direction = Sort.Direction.DESC) Pageable pageable,
                                                                                   Authentication authentication) {
         Page<ReservationListResponseForProvider> response = reservationQueryService.findAllReservationsToHotel(authentication.getName(), pageable, conditions);
         return Response.success(response);

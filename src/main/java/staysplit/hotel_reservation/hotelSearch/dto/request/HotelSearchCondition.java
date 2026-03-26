@@ -1,23 +1,19 @@
 package staysplit.hotel_reservation.hotelSearch.dto.request;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-public class HotelSearchCondition {
-    private LocalDate checkIn;
-    private LocalDate checkOut;
-    private Double longitude;
-    private Double latitude;
-    private Integer numGuest;
-    private Integer minPrice;
-    private Integer maxPrice;
-    private Integer numStar;
+public record HotelSearchCondition(
+        LocalDate checkIn,
+        LocalDate checkOut,
+        Double longitude,
+        Double latitude,
+        Integer numGuest,
+        Integer minPrice,
+        Integer maxPrice,
+        List<Integer> numStar
+) {
 }

@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.ObjectUtils;
 import staysplit.hotel_reservation.hotel.entity.HotelEntity;
 import staysplit.hotel_reservation.hotel.entity.QHotelEntity;
 import staysplit.hotel_reservation.hotelSearch.dto.request.HotelSearchCondition;
@@ -39,7 +40,7 @@ public class HotelSearchRepositoryIml implements HotelSearchRepository {
         BooleanBuilder builder = buildSearchPredicate(condition);
 
         // 거리 계산
-        NumberExpression<Double> distance = calculateDistance(condition.getLongitude(), condition.getLatitude());
+        NumberExpression<Double> distance = calculateDistance(condition.longitude(), condition.latitude());
         builder.and(distance.loe(SEARCH_RADIUS));
 
         // Radius 안의 호텔 검색
@@ -74,15 +75,15 @@ public class HotelSearchRepositoryIml implements HotelSearchRepository {
         return new PageImpl<>(content, pageable, total == null ? 0 : total);
     }
 
-    // 조건 조합: 체크인, 체크아웃 날짜, 인원, 가격, 별점 계산  (거리는 없음)
+    // 조건 조합: 체크인, 체크아웃 날짜, 인원, 가격, 별점 계산, 위치
     private BooleanBuilder buildSearchPredicate(HotelSearchCondition condition) {
         BooleanBuilder builder = new BooleanBuilder();
-        builder.and(boundingBox(condition.getLongitude(), condition.getLatitude()));    // bounding box
-        builder.and(availableBetween(condition.getCheckIn(), condition.getCheckOut())); // overlap
-        builder.and(numGuestGoe(condition.getNumGuest()));
-        builder.and(minPrice(condition.getMinPrice()));
-        builder.and(maxPrice(condition.getMaxPrice()));
-        builder.and(starLevelGoe(condition.getNumStar()));
+        builder.and(boundingBox(condition.longitude(), condition.latitude()));    // bounding box
+        builder.and(availableBetween(condition.checkIn(), condition.checkOut())); // overlap
+        builder.and(numGuestGoe(condition.numGuest()));
+        builder.and(minPrice(condition.minPrice()));
+        builder.and(maxPrice(condition.maxPrice()));
+        builder.and(starLevelIn(condition.numStar()));
         return builder;
     }
 
@@ -147,8 +148,11 @@ public class HotelSearchRepositoryIml implements HotelSearchRepository {
         return maxPrice == null ? null : ROOM.price.loe(maxPrice);
     }
 
-    private BooleanExpression starLevelGoe(Integer numStar) {
-        return numStar == null ? null : HOTEL.starLevel.goe(numStar);
+    private BooleanExpression starLevelIn(List<Integer> numStars) {
+        if (ObjectUtils.isEmpty(numStars)) {
+            return null;
+        }
+        return HOTEL.starLevel.in(numStars);
     }
 
 }
