@@ -21,8 +21,8 @@ public class CsvDataInitializer implements CommandLineRunner {
         if (!enabled) {
             return;
         }
-        //providerCsvImportService.importProvidersFromCsv();
-        //hotelAndRoomCsvImportService.importHotelCsv();
+        providerCsvImportService.importProvidersFromCsv();
+        hotelAndRoomCsvImportService.importHotelCsv();
         photoCsvInitializer.importPhotoFromCsv();
     }
 }

@@ -1,20 +1,46 @@
 # 호텔 예약 플랫폼 SplitStay
 
 목차
-1. [System Architecture](#system-architecture)
-2. [ERD](#erd)
-3. [주요 기술 스택](#주요-기술-스택)
-4. [API 문서](#api-documentation)
-5. [기술적 이슈  해결 과정](#기술적-이슈--해결-과정)
+1. [프로제트 소개](#프로젝트-소개)
+2. [배포 주소 및 계정](#배포-주소-및-계정)
+3. [프론트엔드 데모](#프론트엔드-데모)
+4. [System Architecture](#system-architecture)
+5. [ERD](#erd)
+6. [주요 기술 스택](#주요-기술-스택)
+7. [기술적 이슈  해결 과정](#기술적-이슈--해결-과정)
 
 <br>
+
+## 프로젝트 소개
+- 친구들과 함께 호텔 즐겨찾기 리스트를 공유하고, 결제도 1/n로 나누어서 할 수 있는 호텔 예약 플랫폼입니다.
+- 기존 호텔 예약 서비스는 개인 중심으로 설계되어 있어, 그룹 여행 시 비용 정산과 의사결정 과정이 번거롭다는 문제를 해결하고자 개발했습니다. 
+
+## 배포 주소 및 계정
+|| 주소 |
+|------|----|
+|swagger| https://api.splitnstay.com/swagger-ui/index.html|
+
+<br>
+
+| 사용자 타입 | username          |password|
+|--------|-------------------|----|
+| 손님     |                   ||
+| 호텔 관리인    |  ||
+
+<br>
+
+## 프론트엔드 데모
+
+
+<br>
+
 
 ## System Architecture
 
 ![System Architecture](/assets/System_Architecture.png)
 
 <br>
-
+<br>
 
 ![CI/CD Pipeline](/assets/CICD%20Pipeline.png)
 
@@ -22,11 +48,6 @@
 
 ## ERD
 ![ERD](/assets/splitstay_erd.png)
-
-<br>
-
-## API Documentation
-https://api.splitnstay.com/swagger-ui/index.html
 
 <br>
 
@@ -38,17 +59,32 @@ Backend
 - **Spring Data JPA** 
 - **QueryDSL** (동적 검색 조건 및 타입 안전 쿼리)
 
+Frontend
+- **React + Vite**
+- **AWS S3 + CloudFront**
+  - S3를 정적 파일 저장소로 사용
+  - CloundFront를 통해 CDN 기반 글로벌 캐싱 및 성능 최적화
+
 Database
-- **MySQL 8.0** (복합 인덱스 설계 및 실행 계획 분석)
-- **Redis** (Refresh Token 저장, 캐싱 전략)
+- **AWS RDS MySQL 8.0**
+  - DB 서버를 EC2와 분리하여 관리
+  - 복합 인덱스 설계 및 실행 계획 분석
+- **Redis** 
+  - Refresh Token 저장
+  - 캐싱 전략 적용
 
 Infrastructure & DevOps
-- **AWS EC2** (서비스 배포)
-- **Docker / Docker Compose** (컨테이너 기반 환경 구성)
+- **AWS EC2** (Docker 기반으로 Spring Boot, Redis 컨테이너 운영)
+- **Docker / Docker Compose** (서비스 컨테이너화 및 환경 일관성 확보)
 - **NGINX** (Reverse Proxy 및 포트 관리)
 - **GitHub Actions** (CI/CD 자동화 배포)
-- **AWS Route** (도메인 구매 및 DNS 설정)
-- **HTTPS** (Cerbot 기반 SSL 인증서 적용)
+
+Networking & Storage
+- **AWS Route 53** (도메인 구매 및 DNS 설정)
+- **AWS CloudFront + ACM** (AWS ACM 기반 HTTPS 적용)
+- **AWS S3** (사용자 업로드 이미지 저장소)
+
+Performance & Testing
 - **k6** (부하 테스트, p95 응답 시간 측정 및 성능 개선 효과 검증)
 <Br>
 

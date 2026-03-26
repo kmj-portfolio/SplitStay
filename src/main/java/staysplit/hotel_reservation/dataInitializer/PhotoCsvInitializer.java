@@ -95,7 +95,7 @@ public class PhotoCsvInitializer {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException("Hotel CSV import 실패", e);
+            throw new RuntimeException("Photo CSV import 실패", e);
         }
     }
 }
