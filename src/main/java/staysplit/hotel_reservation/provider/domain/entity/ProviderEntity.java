@@ -22,7 +22,7 @@ public class ProviderEntity {
     private UserEntity user;
 
     @OneToOne
-    @JoinColumn(name = "hotel_id")
+    @JoinColumn(name = "hotel_id", unique = true)
     private HotelEntity hotel;
 
     public void addHotel(HotelEntity hotel) {

@@ -39,7 +39,8 @@ public class SecurityConfig {
             "/api/oauth/google/login",
             "/api/reviews/**",
             "/api/likes/**",
-            "/api/hotels/search"
+            "/api/hotels/search",
+            "/api/webhooks/portone"
     };
 
     private static final String[] PUBLIC_GET_ENDPOINTS = {

@@ -12,8 +12,8 @@ public class CsvDataInitializer implements CommandLineRunner {
     @Value("${app.init.enabled}")
     private boolean enabled;
 
-    private final HotelAndRoomCsvImportService hotelAndRoomCsvImportService;
     private final ProviderCsvImportService providerCsvImportService;
+    private final HotelAndRoomCsvImportService hotelAndRoomCsvImportService;
     private final PhotoCsvInitializer photoCsvInitializer;
 
     @Override

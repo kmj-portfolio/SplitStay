@@ -63,7 +63,10 @@ public class HotelAndRoomCsvImportService {
                     int room1Quantity = Integer.parseInt(record.get("room1_totalQuantity"));
 
                     ProviderEntity providerEntity = providerRepository.findByEmail(email)
-                            .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+                            .orElseThrow(() -> {
+                                log.warn("[해당 이메일의 Provider를 찾을 수 없습니다] email={}", email);
+                                return new AppException(ErrorCode.USER_NOT_FOUND);
+                            });
 
                     HotelEntity hotelEntity = HotelEntity.builder()
                             .name(hotelName)
