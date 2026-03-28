@@ -27,7 +27,7 @@ public class ReviewService {
     private final CustomerRepository customerRepository;
 
     public CreateReviewResponse createReview(CreateReviewRequest request){
-        boolean exists = reviewRepository.existsByUserIdAndHotelId(request.customerId(), request.hotelId());
+        boolean exists = reviewRepository.existsByHotel_IdAndCustomer_Id(request.customerId(), request.hotelId());
         if (exists) {
             throw new IllegalStateException("이미 해당 호텔에 대한 리뷰를 작성하셨습니다.");
         }
@@ -51,13 +51,13 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public Page<GetReviewResponse> getReviewByCustomerId(Integer customerId, Pageable pageable){
-        Page<ReviewEntity> review = reviewRepository.getReviewByCustomerId(customerId, pageable);
+        Page<ReviewEntity> review = reviewRepository.findByCustomer_Id(customerId, pageable);
         return review.map(GetReviewResponse::from);
     }
 
     @Transactional(readOnly = true)
     public Page<GetReviewResponse> getReviewByHotelId(Integer  hotelId, Pageable pageable){
-        Page<ReviewEntity> review = reviewRepository.getReviewByHotelId(hotelId, pageable);
+        Page<ReviewEntity> review = reviewRepository.findByHotelId(hotelId, pageable);
         return review.map(GetReviewResponse::from);
     }
 
