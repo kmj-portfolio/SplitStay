@@ -134,7 +134,7 @@ public class ReservationServiceTest {
                     .roomsAndQuantities(List.of(new RoomReservationRequest(5, 2)))
                     .checkInDate(LocalDate.of(2025, 12, 21))
                     .checkOutDate(LocalDate.of(2025, 12, 25))
-                    .invitedEmails(List.of("friend@example.com"))
+                    .nicknames(List.of("friend"))
                     .isSplitPayment(true)
                     .build();
 
@@ -142,7 +142,7 @@ public class ReservationServiceTest {
 
             UserEntity friendUser = UserEntity.builder()
                     .id(3)
-                    .email("friend@example.com")
+                    .email("friend")
                     .role(Role.CUSTOMER)
                     .build();
 
@@ -154,7 +154,7 @@ public class ReservationServiceTest {
                     .nickname("friend")
                     .build();
 
-            given(customerValidator.validateCustomerByEmail("friend@example.com")).willReturn(friendCustomer);
+            given(customerValidator.validateCustomerByNickname("friend")).willReturn(friendCustomer);
             given(hotelValidator.validateHotel(1)).willReturn(hotel);
             given(roomRepository.findByIdWithLock(5)).willReturn(Optional.of(room));
             given(reservedRoomRepository.countReservedRoomsForDateRange(
