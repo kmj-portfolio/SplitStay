@@ -27,7 +27,7 @@ public class PortOneWebhookFacade {
     // Portone을 사용한 검증 조회
     public void verifyWebhookPayment(PortOneWebhookRequest request) {
         String paymentId = request.data().paymentId();
-        log.info("[PortOneWebhook 정보 검증 시작] paymentId={}", paymentId);
+        log.info("[PortOneWebhook 수신] paymentId={}, type={}", paymentId, request.type());
 
         // 이미 검증이 완료되었는지 확인
         PaymentEntity paymentEntity = paymentRepository.findByPaymentId(paymentId)
@@ -45,7 +45,6 @@ public class PortOneWebhookFacade {
         // webhook: 결제 완료, server: 결제 미완료
         if (request.type().equals("Transaction.Paid")) {
 
-
             // PortOne에서 paymentId로 결제 내역 조회
             log.info("[포트원 결제 내역 조회] portOnePaymentId={}", paymentId);
             PortOnePaymentResponse portOnePaymentResponse = portOneClient.getPayment(paymentId);
@@ -62,7 +61,7 @@ public class PortOneWebhookFacade {
                 portOnePaymentValidator.validateForConfirmation(portOnePaymentResponse, paymentEntity);
 
                 // Transaction내에서 PaymentEntity 생성 및 저장
-                paymentTransactionService.processConfirmation(paymentEntity);
+                paymentTransactionService.processConfirmation(paymentId);
 
             } catch (Exception e) {
                 log.error("[결제 처리 중 에러 발생 - 자동 취소 진행] paymentId={}", paymentId, e);

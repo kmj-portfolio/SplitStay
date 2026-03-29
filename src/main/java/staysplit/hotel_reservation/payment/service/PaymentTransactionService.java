@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import staysplit.hotel_reservation.common.exception.AppException;
+import staysplit.hotel_reservation.common.exception.ErrorCode;
 import staysplit.hotel_reservation.customer.domain.entity.CustomerEntity;
 import staysplit.hotel_reservation.customer.service.CustomerValidator;
 import staysplit.hotel_reservation.payment.domain.dto.request.CreatePaymentRequest;
@@ -41,7 +43,7 @@ public class PaymentTransactionService {
 
         PaymentEntity paymentEntity = PaymentEntity.builder()
                 .reservationParticipant(reservationParticipant)
-                .paymentId(createPaymentId(reservation.getReservationNumber()))
+                .paymentId(createPaymentId())
                 .amount(reservationParticipant.getSplitAmount())
                 .status(PaymentStatus.READY)
                 .build();
@@ -52,7 +54,17 @@ public class PaymentTransactionService {
     }
 
     @Transactional
-    public PaymentResponse processConfirmation(PaymentEntity paymentEntity) {
+    public PaymentResponse processConfirmation(String paymentId) {
+        // PaymentEntity 조회
+        PaymentEntity paymentEntity = paymentRepository.findByPaymentIdWithLock(paymentId)
+                .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_NOT_FOUND));
+
+        // 락 획득 후 먼저 처리되었는지 다시 확인
+        if (paymentEntity.isPaid()) {
+            log.info("[락 획득 후 이미 처리된 결제 확인: 멱등성 처리] paymentId={}", paymentId);
+            return paymentMapper.toPaymentResponse(paymentEntity);
+        }
+
         // PaymentEntity 상태 변경
         paymentEntity.markPaid();
 
@@ -96,7 +108,7 @@ public class PaymentTransactionService {
         }
     }
 
-    private String createPaymentId(String reservationNumber) {
+    private String createPaymentId() {
         return UUID.randomUUID().toString();
     }
 }

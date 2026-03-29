@@ -18,7 +18,6 @@ import staysplit.hotel_reservation.payment.domain.dto.response.PortOnePaymentRes
 import staysplit.hotel_reservation.payment.domain.entity.PaymentEntity;
 import staysplit.hotel_reservation.payment.mapper.PaymentMapper;
 import staysplit.hotel_reservation.payment.repository.PaymentRepository;
-import staysplit.hotel_reservation.payment.webhook.dto.PortOneWebhookRequest;
 import staysplit.hotel_reservation.reservation.domain.entity.ReservationEntity;
 import staysplit.hotel_reservation.reservation.service.ReservationValidator;
 
@@ -85,7 +84,7 @@ public class PaymentFacade {
             portOnePaymentValidator.validateForConfirmation(portOnePaymentResponse, paymentEntity);
 
             // Transaction내에서 PaymentEntity 생성 및 저장
-            return paymentTransactionService.processConfirmation(paymentEntity);
+            return paymentTransactionService.processConfirmation(paymentId);
 
         } catch (Exception e) {
             log.error("[결제 처리 중 에러 발생 - 자동 취소 진행] paymentId={}", paymentId, e);
