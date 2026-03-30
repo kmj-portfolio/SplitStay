@@ -8,7 +8,6 @@ import staysplit.hotel_reservation.reservation.dto.response.*;
 import staysplit.hotel_reservation.reservation.domain.entity.ReservationEntity;
 import staysplit.hotel_reservation.reservation.domain.entity.ReservationParticipantEntity;
 import staysplit.hotel_reservation.reservedRoom.entity.ReservedRoomEntity;
-import staysplit.hotel_reservation.room.domain.RoomEntity;
 
 import java.util.List;
 
@@ -61,9 +60,7 @@ public class ReservationMapper {
     }
 
     public ReservationListResponse toListResponse(ReservationEntity reservation) {
-        ReservedRoomEntity firstRoom = reservation.getReservedRooms().get(0);
-        RoomEntity room = firstRoom.getRoom();
-        HotelEntity hotel = room.getHotel();
+        HotelEntity hotel = reservation.getHotel();
 
         return ReservationListResponse.builder()
                 .reservationId(reservation.getId())
@@ -72,6 +69,7 @@ public class ReservationMapper {
                 .totalPrice(reservation.getTotalPrice())
                 .checkInDate(reservation.getCheckInDate())
                 .checkOutDate(reservation.getCheckOutDate())
+                .hotelId(hotel.getId())
                 .hotelName(hotel.getName())
                 .hotelAddress(hotel.getAddress())
                 .hotelMainImageUrl(

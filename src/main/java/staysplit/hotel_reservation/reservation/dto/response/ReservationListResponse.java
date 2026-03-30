@@ -8,6 +8,7 @@ import java.time.LocalDate;
 public record ReservationListResponse(
         Integer reservationId,
         String reservationNumber,
+        Integer hotelId,
         String hotelName,
         String hotelMainImageUrl,
         String hotelAddress,
