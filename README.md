@@ -1,7 +1,7 @@
 # 호텔 예약 플랫폼 SplitStay
 
 목차
-1. [프로제트 소개](#프로젝트-소개)
+1. [프로젝트 소개](#프로젝트-소개)
 2. [배포 주소 및 계정](#배포-주소-및-계정)
 3. [프론트엔드 데모](#프론트엔드-데모)
 4. [System Architecture](#system-architecture)
@@ -16,20 +16,35 @@
 - 기존 호텔 예약 서비스는 개인 중심으로 설계되어 있어, 그룹 여행 시 비용 정산과 의사결정 과정이 번거롭다는 문제를 해결하고자 개발했습니다. 
 
 ## 배포 주소 및 계정
-|| 주소 |
-|------|----|
-|swagger| https://api.splitnstay.com/swagger-ui/index.html|
+|         | 주소                                             |
+|---------|------------------------------------------------|
+|프론트엔드 주소| https://splitnstay.com|
+|백엔드 API 주소     | https://api.splitnstay.com                                        |
+| swagger | https://api.splitnstay.com/swagger-ui/index.html |
 
 <br>
 
-| 사용자 타입 | username          |password|
-|--------|-------------------|----|
-| 손님     |                   ||
-| 호텔 관리인    |  ||
+| 사용자 타입 | username         | password   |
+|--------|------------------|------------|
+| 손님     | hansel@gmail.com | demoGuest1 |
+| 호텔 관리인    | westinChosun@gmail.com     | demoHotel1 |
 
 <br>
 
 ## 프론트엔드 데모
+
+#### 호텔 검색
+![호텔 검색](docs/호텔_검색.gif)
+
+<br>
+
+#### 예약 및 결제
+![호텔 예약 및 결제](docs/호텔_예약_및_결제.gif)
+
+<br>
+
+#### 다른 사용자와 좋아요 목록 공유 
+![목록 공유](docs/좋아요_목록_공유.gif)
 
 
 <br>
