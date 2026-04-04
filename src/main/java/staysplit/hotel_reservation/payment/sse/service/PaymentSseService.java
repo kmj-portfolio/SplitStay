@@ -71,7 +71,7 @@ public class PaymentSseService {
     public void sendHeartBeatToAll() {
         List<String> paymentIdList = paymentSseRepository.getAllPaymentId();
         paymentIdList.forEach(this::sendHeartbeat);
-        log.info("[SSE heartbeat] 활성 연결 수={}", paymentIdList.size());
+        log.debug("[SSE heartbeat] 활성 연결 수={}", paymentIdList.size());
     }
 
     private void sendHeartbeat(String paymentId) {
