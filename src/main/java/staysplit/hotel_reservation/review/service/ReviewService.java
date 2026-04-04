@@ -75,6 +75,7 @@ public class ReviewService {
         ReviewEntity review = validateReview(reviewId);
         hasAuthority(review, customerId, reviewId);
         review.markDeleted();
+        reviewRepository.delete(review);
     }
 
     private ReviewEntity validateReview(Integer reviewId) {

@@ -33,6 +33,7 @@ public class PaymentTransactionService {
     private final PaymentMapper paymentMapper;
     private final ReservationValidator reservationValidator;
     private final CustomerValidator customerValidator;
+    private final PaymentValidator paymentValidator;
 
     @Transactional
     public PaymentResponse createPayment(String email, CreatePaymentRequest request) {
@@ -40,6 +41,7 @@ public class PaymentTransactionService {
         ReservationEntity reservation = reservationValidator.validateReservation(request.reservationId());
         ReservationParticipantEntity reservationParticipant = reservationValidator.validateReservationParticipant(
                 customerEntity.getId(), reservation.getId());
+        paymentValidator.checkForDuplicatePaymentByParticipant(reservationParticipant.getId());
 
         PaymentEntity paymentEntity = PaymentEntity.builder()
                 .reservationParticipant(reservationParticipant)

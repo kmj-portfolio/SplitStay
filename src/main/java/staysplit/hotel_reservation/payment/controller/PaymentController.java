@@ -10,6 +10,7 @@ import staysplit.hotel_reservation.payment.domain.dto.request.CancelPaymentReque
 import staysplit.hotel_reservation.payment.domain.dto.request.CreatePaymentRequest;
 import staysplit.hotel_reservation.payment.domain.dto.request.VerifyPaymentRequest;
 import staysplit.hotel_reservation.payment.domain.dto.response.PaymentResponse;
+import staysplit.hotel_reservation.payment.sse.dto.response.PaymentStatusResponse;
 import staysplit.hotel_reservation.payment.service.PaymentFacade;
 import staysplit.hotel_reservation.common.entity.Response;
 import staysplit.hotel_reservation.payment.service.PaymentTransactionService;
@@ -29,13 +30,6 @@ public class PaymentController {
         return Response.success(response);
     }
 
-    @PostMapping("/verifications")
-    public Response<PaymentResponse> verifyPGPayment(Authentication authentication, @RequestBody VerifyPaymentRequest request) {
-        PaymentResponse response = paymentFacade.verifyPayment(authentication.getName(), request);
-        log.info("[결제 검증 완료]");
-        return Response.success(response);
-    }
-
     @PostMapping("/cancel")
     public Response<String> cancelPayment(Authentication authentication, @RequestBody CancelPaymentRequest request) {
         paymentFacade.cancelPayment(authentication.getName(), request);
@@ -47,6 +41,12 @@ public class PaymentController {
     public Response<Page<PaymentResponse>> getPaymentsByCustomer(Authentication authentication, Pageable pageable) {
         Page<PaymentResponse> responses = paymentFacade.getPaymentsByCustomer(authentication.getName(), pageable);
         return Response.success(responses);
+    }
+
+    @GetMapping("/{paymentId}")
+    public Response<PaymentStatusResponse> verifyPaymentStatus(@PathVariable String paymentId, Authentication authentication) {
+        PaymentStatusResponse response = paymentFacade.getPaymentStatus(paymentId, authentication.getName());
+        return Response.success(response);
     }
 
 }

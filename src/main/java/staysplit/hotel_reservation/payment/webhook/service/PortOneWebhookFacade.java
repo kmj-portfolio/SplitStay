@@ -9,6 +9,7 @@ import staysplit.hotel_reservation.payment.domain.dto.response.PortOnePaymentRes
 import staysplit.hotel_reservation.payment.domain.entity.PaymentEntity;
 import staysplit.hotel_reservation.payment.repository.PaymentRepository;
 import staysplit.hotel_reservation.payment.service.*;
+import staysplit.hotel_reservation.payment.sse.service.PaymentSseService;
 import staysplit.hotel_reservation.payment.webhook.dto.PortOneWebhookRequest;
 import staysplit.hotel_reservation.reservation.domain.entity.ReservationEntity;
 import staysplit.hotel_reservation.reservation.service.ReservationValidator;
@@ -23,6 +24,7 @@ public class PortOneWebhookFacade {
     private final PaymentCompensationService paymentCompensationService;
     private final PaymentRepository paymentRepository;
     private final ReservationValidator reservationValidator;
+    private final PaymentSseService paymentSseService;
 
     // Portone을 사용한 검증 조회
     public void verifyWebhookPayment(PortOneWebhookRequest request) {
@@ -37,8 +39,13 @@ public class PortOneWebhookFacade {
                 });
 
         // 멱등성 보장: 이미 결제완료되었거나 취소처리된 경우 무시하고 200 응답
-        if (paymentEntity.isPaid() || paymentEntity.isCancelled()) {
-            log.info("[이미 처리된 결제입니다] paymentId={}", paymentId);
+        if (paymentEntity.isPaid()) {
+            log.info("[결제 검증 - 이미 결제 완료된 건, 멱등성 처리] paymentId={}", paymentId);
+            return;
+        }
+
+        if (paymentEntity.isCancelled()) {
+            log.warn("[결제 검증 - 이미 취소된 결제에 대한 재호출, 멱등성 처리] paymentId={}", paymentId);
             return;
         }
 
@@ -63,9 +70,12 @@ public class PortOneWebhookFacade {
                 // Transaction내에서 PaymentEntity 생성 및 저장
                 paymentTransactionService.processConfirmation(paymentId);
 
+                paymentSseService.sendPaymentCompleted(paymentId);
+
             } catch (Exception e) {
                 log.error("[결제 처리 중 에러 발생 - 자동 취소 진행] paymentId={}", paymentId, e);
                 paymentCompensationService.cancelPaymentSilently(paymentId, "처리 실패로 자동 취소");
+                paymentSseService.sendPaymentFailed(paymentId);
                 return;
             }
         }

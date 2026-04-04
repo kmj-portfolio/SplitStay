@@ -41,6 +41,7 @@ public enum ErrorCode {
     PAYMENT_RESERVATION_MISMATCH(HttpStatus.BAD_REQUEST, "결제 내역과 예약 내역이 일치하지 않습니다."),
     PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "결제 내역을 찾을 수 없습니다."),
     BOOKING_ALREADY_CONSUMED(HttpStatus.CONFLICT, "이미 숙박은 완료하여 환불이 불가합니다."),
+    DUPLICATE_PAYMENT(HttpStatus.CONFLICT, "이미 진행중이거나 완료된 결제입니다."),
 
     // Reservation
     INVALID_CHECKOUT_DATE(HttpStatus.CONFLICT, "체크아웃 날짜는 체크인 날짜보다 이후여야 합니다."),
