@@ -1,4 +1,4 @@
-package staysplit.hotel_reservation.payment.domain.dto.request;
+package staysplit.hotel_reservation.payment.portone.dto.request;
 
 public record PortOneCancelRequest(
         String reason

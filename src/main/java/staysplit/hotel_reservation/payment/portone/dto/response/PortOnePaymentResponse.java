@@ -1,4 +1,4 @@
-package staysplit.hotel_reservation.payment.domain.dto.response;
+package staysplit.hotel_reservation.payment.portone.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
