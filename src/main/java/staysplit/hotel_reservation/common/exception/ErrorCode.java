@@ -71,6 +71,10 @@ public enum ErrorCode {
     HOTEL_ALREADY_IN_LIKE_LIST(HttpStatus.CONFLICT, "이미 좋아요한 호텔입니다."),
     SAME_EMAIL_AS_OWNER(HttpStatus.CONFLICT, "사용자가 자신의 이메일 주소를 입력했습니다."),
 
+    // PortOne
+    PORT_ONE_GET_PAYMENT_FAILED(HttpStatus.BAD_GATEWAY, "포트원 결제 조회에 실패했습니다."),
+    PORT_ONE_CANCEL_PAYMENT_FAILED(HttpStatus.BAD_GATEWAY, "포트원 결제 취소에 실패했습니다."),
+
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에서 오류가 발생했습니다.");
 
     private HttpStatus httpStatus;
