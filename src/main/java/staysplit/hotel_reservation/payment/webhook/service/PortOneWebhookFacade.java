@@ -78,7 +78,6 @@ public class PortOneWebhookFacade {
                 log.error("[결제 처리 중 에러 발생 - 자동 취소 진행] paymentId={}", paymentId, e);
                 paymentCompensationService.cancelPaymentSilently(paymentId, "처리 실패로 자동 취소");
                 paymentSseService.sendPaymentFailed(paymentId);
-                return;
             }
         }
     }

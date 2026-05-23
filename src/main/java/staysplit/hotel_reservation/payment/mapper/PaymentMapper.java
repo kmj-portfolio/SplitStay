@@ -27,7 +27,7 @@ public class PaymentMapper {
                 .cardPublisher(paymentEntity.getCardPublisherName())
                 .reservationId(reservation.getId())
                 .reservationNumber(reservation.getReservationNumber())
-                .paidAt(paymentEntity.getPaidAt())
+                .paidAt(paymentEntity.getCreatedAt())
                 .payMethod(paymentEntity.getPayMethod())
                 .build();
     }

@@ -3,6 +3,7 @@ package staysplit.hotel_reservation.payment.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import staysplit.hotel_reservation.payment.portone.client.PortOneClient;
 
 @Slf4j
 @Service

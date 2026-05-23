@@ -40,8 +40,8 @@ public class PaymentEntity {
     private PaymentStatus status;
 
     @CreatedDate
-    @Column(name = "paid_at", updatable = false)
-    private LocalDateTime paidAt;
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
 
     public boolean isPaid() {
         return status == PaymentStatus.PAID;

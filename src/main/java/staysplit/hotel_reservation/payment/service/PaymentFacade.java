@@ -13,6 +13,7 @@ import staysplit.hotel_reservation.customer.service.CustomerValidator;
 import staysplit.hotel_reservation.payment.domain.dto.request.CancelPaymentRequest;
 import staysplit.hotel_reservation.payment.domain.dto.response.CancelPaymentResponse;
 import staysplit.hotel_reservation.payment.domain.dto.response.PaymentResponse;
+import staysplit.hotel_reservation.payment.portone.client.PortOneClient;
 import staysplit.hotel_reservation.payment.sse.dto.response.PaymentStatusResponse;
 import staysplit.hotel_reservation.payment.domain.entity.PaymentEntity;
 import staysplit.hotel_reservation.payment.mapper.PaymentMapper;
@@ -49,7 +50,7 @@ public class PaymentFacade {
         portOneClient.cancelPayment(paymentId, request.reason());
 
         try {
-           return paymentTransactionService.processCancellation(paymentEntity);
+           return paymentTransactionService.processCancellation(paymentId);
         } catch (Exception e) {
             log.error("[중요] 포트원 취소는 성공했지만 DB 반영 실패. 수동/재처리 필요. portOnePaymentId={}", paymentId, e);
             throw new AppException(ErrorCode.INTERNAL_SERVER_ERROR,

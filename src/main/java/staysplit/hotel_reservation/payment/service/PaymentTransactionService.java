@@ -25,6 +25,7 @@ import java.util.UUID;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class PaymentTransactionService {
 
@@ -35,7 +36,6 @@ public class PaymentTransactionService {
     private final CustomerValidator customerValidator;
     private final PaymentValidator paymentValidator;
 
-    @Transactional
     public PaymentResponse createPayment(String email, CreatePaymentRequest request) {
         CustomerEntity customerEntity = customerValidator.validateCustomerByEmail(email);
         ReservationEntity reservation = reservationValidator.validateReservation(request.reservationId());
@@ -55,7 +55,6 @@ public class PaymentTransactionService {
         return paymentMapper.toPaymentResponse(paymentEntity);
     }
 
-    @Transactional
     public PaymentResponse processConfirmation(String paymentId) {
         // PaymentEntity 조회
         PaymentEntity paymentEntity = paymentRepository.findByPaymentIdWithLock(paymentId)
@@ -84,7 +83,9 @@ public class PaymentTransactionService {
         return paymentMapper.toPaymentResponse(paymentEntity);
     }
 
-    public CancelPaymentResponse processCancellation(PaymentEntity paymentEntity) {
+    public CancelPaymentResponse processCancellation(String paymentId) {
+        PaymentEntity paymentEntity = paymentRepository.findByPaymentIdWithLock(paymentId)
+                .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_NOT_FOUND));
 
         // 결제 상태를 CANCELLED로 변경
         paymentEntity.markCancelled();
