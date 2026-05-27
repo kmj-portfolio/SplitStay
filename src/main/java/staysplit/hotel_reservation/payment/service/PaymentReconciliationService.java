@@ -29,6 +29,8 @@ public class PaymentReconciliationService {
     private final PaymentCompensationService paymentCompensationService;
 
     public void processPaidInPGbutNotProcessedInServer() {
+         
+        // PaymentStatus가 READY/FAILED이고, 생성시간이 35분 이전인 PaymentEntity를 조회한다
         List<PaymentEntity> paymentEntityList = paymentRepository.findPaymentEntitiesByStatusInAndCreatedAtAfter(
                 List.of(PaymentStatus.READY, PaymentStatus.FAILED),
                 LocalDateTime.now().minusMinutes(35));
@@ -36,14 +38,17 @@ public class PaymentReconciliationService {
         for (PaymentEntity paymentEntity : paymentEntityList) {
             String paymentId = paymentEntity.getPaymentId();
             try {
+                // PortOne에서 해당 paymentId의 결제 상태가 PAID인 경우에만 continue
                 PortOnePaymentResponse portOnePaymentResponse = portOneClient.getPayment(paymentId);
                 if (!portOnePaymentResponse.status().equals("PAID")) continue;
 
+                // PaymentEntity와 연관된 Reservation을 조회한다
                 ReservationEntity reservation = paymentEntity.getReservationParticipant().getReservation();
+
                 log.debug("[예약이 만료되었는지 확인] reservationId={})", reservation.getId());
                 reservationValidator.validateNotExpired(reservation);
 
-                log.debug("[결제 유효성 검증]");
+                log.debug("[PG에서 조회한 결제가 유효한지 검증] reservationId={})", reservation.getId());
                 portOnePaymentValidator.validateForConfirmation(portOnePaymentResponse, paymentEntity);
 
                 paymentTransactionService.processConfirmation(paymentId);
