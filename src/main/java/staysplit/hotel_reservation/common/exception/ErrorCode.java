@@ -74,6 +74,7 @@ public enum ErrorCode {
     // PortOne
     PORT_ONE_GET_PAYMENT_FAILED(HttpStatus.BAD_GATEWAY, "포트원 결제 조회에 실패했습니다."),
     PORT_ONE_CANCEL_PAYMENT_FAILED(HttpStatus.BAD_GATEWAY, "포트원 결제 취소에 실패했습니다."),
+    INVALID_WEBHOOK_SIGNATURE(HttpStatus.UNAUTHORIZED, "웹훅 서명이 유효하지 않습니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에서 오류가 발생했습니다.");
 

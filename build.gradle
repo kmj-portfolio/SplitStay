@@ -74,7 +74,11 @@ dependencies {
 	// AWS S3
 	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'
 
+	// csv parsing
 	implementation 'org.apache.commons:commons-csv:1.10.0'
+
+	// portone sdk
+	implementation 'io.portone:server-sdk:0.24.0'
 }
 
 tasks.named('test') {
