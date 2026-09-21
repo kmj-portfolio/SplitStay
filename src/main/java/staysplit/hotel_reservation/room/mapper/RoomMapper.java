@@ -18,9 +18,9 @@ public class RoomMapper {
 
     public RoomInfoResponse toRoomInfoResponse(RoomEntity room) {
 
-        Optional<PhotoEntity> mainPhoto = room.getMainPhoto();
+        //Optional<PhotoEntity> mainPhoto = room.getMainPhoto();
 
-        String mainUrl = mainPhoto.isPresent() ? s3Service.getS3Url(mainPhoto.get().getStoredFileName()) : null;
+        //String mainUrl = mainPhoto.isPresent() ? s3Service.getS3Url(mainPhoto.get().getStoredFileName()) : null;
 
         List < String > additionalUrls = room.getPhotos()
         .stream()
@@ -37,7 +37,8 @@ public class RoomMapper {
                 room.getMaxOccupancy(),
                 room.getPrice(),
                 room.getTotalQuantity(),
-                mainUrl,
+                //mainUrl,
+                null,
                 additionalUrls);
     }
 }
