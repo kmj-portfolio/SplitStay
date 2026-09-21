@@ -2,11 +2,13 @@ package staysplit.hotel_reservation.hotel.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.locationtech.jts.geom.Point;
 import staysplit.hotel_reservation.hotel.dto.request.UpdateHotelRequest;
 import staysplit.hotel_reservation.photo.domain.PhotoEntity;
 import staysplit.hotel_reservation.provider.domain.entity.ProviderEntity;
 
 import java.util.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -34,6 +36,10 @@ public class HotelEntity {
 
     @Column(nullable = false)
     private Double latitude;
+
+    @Column(columnDefinition = "POINT SRID 4326",
+            nullable = false)
+    private Point location;
 
     private String description;
 
