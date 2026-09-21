@@ -52,11 +52,12 @@ public class HotelService {
         return mapper.toDetailResponse(hotel);
     }
 
+    /*
     @Transactional(readOnly = true)
     public Page<GetHotelListResponse> getHotelList(Pageable pageable) {
         Page<HotelEntity> hotelPage = hotelRepository.findAll(pageable);
         return hotelPage.map(hotel -> mapper.toListResponse(hotel));
-    }
+    }*/
 
     public GetHotelDetailResponse updateHotel(Integer hotelId, UpdateHotelRequest request, String providerEmail) {
         ProviderEntity provider = validateProvider(providerEmail);

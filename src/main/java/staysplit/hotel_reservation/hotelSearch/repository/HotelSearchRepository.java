@@ -5,5 +5,5 @@ import staysplit.hotel_reservation.hotel.entity.HotelEntity;
 import staysplit.hotel_reservation.hotelSearch.dto.request.HotelSearchCondition;
 
 public interface HotelSearchRepository {
-    Page<HotelEntity> searchNearbyHotels(HotelSearchCondition condition, Pageable pageable);
+    Slice<HotelEntity> searchNearbyHotels(HotelSearchCondition condition, Pageable pageable);
 }

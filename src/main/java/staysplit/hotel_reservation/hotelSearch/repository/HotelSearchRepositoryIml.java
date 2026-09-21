@@ -1,26 +1,18 @@
 package staysplit.hotel_reservation.hotelSearch.repository;
 
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.NumberExpression;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 import staysplit.hotel_reservation.hotel.entity.HotelEntity;
 import staysplit.hotel_reservation.hotel.entity.QHotelEntity;
 import staysplit.hotel_reservation.hotelSearch.dto.request.HotelSearchCondition;
-import staysplit.hotel_reservation.reservation.domain.entity.QReservationEntity;
-import staysplit.hotel_reservation.reservedRoom.entity.QReservedRoomEntity;
-import staysplit.hotel_reservation.room.domain.QRoomEntity;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -28,131 +20,170 @@ import java.util.List;
 public class HotelSearchRepositoryIml implements HotelSearchRepository {
 
     private final JPAQueryFactory queryFactory;
+    private final EntityManager entityManager;
 
-    private static final double SEARCH_RADIUS = 5.0; // 검색할 반경 (km)
+    private static final double SEARCH_RADIUS_METERS = 5_000.0;
+
+    private static final double SEARCH_RADIUS_KM = 5.0;
 
     private static final QHotelEntity HOTEL = QHotelEntity.hotelEntity;
-    private static final QRoomEntity ROOM = QRoomEntity.roomEntity;
 
     @Override
-    public Page<HotelEntity> searchNearbyHotels(HotelSearchCondition condition, Pageable pageable) {
-        // 체크인, 체크아웃 날짜, 인원, 가격, 별점 계산
-        BooleanBuilder builder = buildSearchPredicate(condition);
+    public Slice<HotelEntity> searchNearbyHotels(
+            HotelSearchCondition condition,
+            Pageable pageable
+    ) {
 
-        // 거리 계산
-        NumberExpression<Double> distance = calculateDistance(condition.longitude(), condition.latitude());
-        builder.and(distance.loe(SEARCH_RADIUS));
+        /*
+            1차 조회 - 거리 순으로 호텔 ID만 조회
 
-        // Radius 안의 호텔 검색
-        List<Integer> hotelIdsWithinDistance = queryFactory
-                .select(HOTEL.id)
-                .from(HOTEL)
-                .join(ROOM).on(ROOM.hotel.eq(HOTEL))
-                .where(builder)
-                .groupBy(HOTEL.id)       // 호텔 단위로 묶어서 중복 제거
-                .orderBy(distance.asc()) // 거리 순 정렬
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
+            - Slice의 hasNext 확인을 위해 pageSize + 1개를 가져온다
 
-        Long total = queryFactory
-                .select(HOTEL.id.countDistinct())
-                .from(HOTEL)
-                .join(ROOM).on(ROOM.hotel.eq(HOTEL))
-                .where(builder)
-                .fetchOne();
+            - ST_Distance_Sphere()를 WHERE와 ORDER BY에서 각각 호출하면
+              옵티마이저가 값을 재사용하지 않기 때문에 MySQL이 두번 계산해서 비용이 두 배가 된다.
 
-        // hotel 20개만 상세조회
+                   => 서브쿼리로 한 번만 계산해서 dist 컬럼으로 재사용한다.
+         */
+        List<Integer> hotelIdsWithinDistance = fetchHotelIdsWithinDistance(condition, pageable);
+
+        boolean hasNext =
+                hotelIdsWithinDistance.size() > pageable.getPageSize();
+
+        List<Integer> pagedHotelIds = hasNext
+                ? hotelIdsWithinDistance.subList(
+                0,
+                pageable.getPageSize()
+        )
+                : hotelIdsWithinDistance;
+
+        // 결과가 없다면 바로 빈 Slice 반환
+        if (pagedHotelIds.isEmpty()) {
+            return new SliceImpl<>(
+                    List.of(),
+                    pageable,
+                    false
+            );
+        }
+
+
+        // 2차 조회 - ID 기분으로 HotelEntity 상세 조회
         List<HotelEntity> content = queryFactory
                 .selectFrom(HOTEL)
-                .where(HOTEL.id.in(hotelIdsWithinDistance))
+                .where(HOTEL.id.in(pagedHotelIds))
                 .fetch();
 
-        content.sort((a, b) ->
-                Integer.compare(hotelIdsWithinDistance.indexOf(a.getId()), hotelIdsWithinDistance.indexOf(b.getId()))
+        // IN 절은 ID 순서를 보장하지 않기 때문에, 1차 조회의 거리 순으로 다시 정렬
+        content.sort(
+                (a, b) -> Integer.compare(
+                        pagedHotelIds.indexOf(a.getId()),
+                        pagedHotelIds.indexOf(b.getId())
+                )
         );
 
-        return new PageImpl<>(content, pageable, total == null ? 0 : total);
+        return new SliceImpl<>(
+                content,
+                pageable,
+                hasNext
+        );
     }
 
-    // 조건 조합: 체크인, 체크아웃 날짜, 인원, 가격, 별점 계산, 위치
-    private BooleanBuilder buildSearchPredicate(HotelSearchCondition condition) {
-        BooleanBuilder builder = new BooleanBuilder();
-        builder.and(boundingBox(condition.longitude(), condition.latitude()));    // bounding box
-        builder.and(availableBetween(condition.checkIn(), condition.checkOut())); // overlap
-        builder.and(numGuestGoe(condition.numGuest()));
-        builder.and(minPrice(condition.minPrice()));
-        builder.and(maxPrice(condition.maxPrice()));
-        builder.and(starLevelIn(condition.numStar()));
-        return builder;
-    }
+    /*
+        거리 순으로 정렬된 호텔 ID 목록을 조회
 
-    // MySQL ST_Distance_Sphere 사용해서 두 coordinate 거리 구하기 (KM)
-    private NumberExpression calculateDistance(Double givenLongitude, Double givenLatitude) {
+        ST_Distance_Sphere()는 subquery 안에서 dist 컬럼으로 1번만 계산하고, 바깥 쿼리에서 그 컬럼을 필터/정렬에 재사용한다.
+     */
+    private List<Integer> fetchHotelIdsWithinDistance(HotelSearchCondition condition, Pageable pageable) {
 
-        NumberExpression<Double> distanceMeter = Expressions.numberTemplate(
-                Double.class,
-                "ST_Distance_Sphere(POINT({0}, {1}), POINT({2}, {3}))",
-                HOTEL.longitude,            // 호텔의 경도와 위도
-                HOTEL.latitude,
-                givenLongitude,  // 사용자가 입력한 위치의 경도와 위도
-                givenLatitude
+        double latDelta = SEARCH_RADIUS_KM / 110.0;
+
+        double lonDelta = SEARCH_RADIUS_KM / (110.0 * Math.cos(Math.toRadians(condition.latitude())));
+
+        double minLat = condition.latitude() - latDelta;
+        double maxLat = condition.latitude() + latDelta;
+        double minLon = condition.longitude() - lonDelta;
+        double maxLon = condition.longitude() + lonDelta;
+        
+        StringBuilder sql = new StringBuilder(
+                "SELECT t.hotel_id FROM ( "
+                        + "    SELECT h.hotel_id, "
+                        + "           ST_Distance_Sphere(POINT(h.longitude, h.latitude), POINT(:lon, :lat)) AS dist "
+                        + "    FROM hotel_entity h "
+                        + "    WHERE h.latitude BETWEEN :minLat AND :maxLat "
+                        + "      AND h.longitude BETWEEN :minLon AND :maxLon "
         );
 
-        // 두 지점간의 거리를 m에서 km로 변환
-        return distanceMeter.divide(1000.0);
-    }
+        sql.append(
+                "      AND EXISTS ( "
+                        + "          SELECT 1 FROM room_entity r "
+                        + "          WHERE r.hotel_id = h.hotel_id "
+                        + "            AND r.total_quantity > ( "
+                        + "                SELECT COALESCE(SUM(rr.quantity), 0) "
+                        + "                FROM reserved_room_entity rr "
+                        + "                JOIN reservation_entity res ON rr.reservation_id = res.reservation_id "
+                        + "                WHERE rr.room_id = r.room_id "
+                        + "                  AND res.check_in_date < :checkOut "
+                        + "                  AND res.check_out_date > :checkIn "
+                        + "            ) "
+        );
 
-    // Bounding Box
-    public BooleanExpression boundingBox(Double givenLongitude, Double givenLatitude) {
-        double latDelta = SEARCH_RADIUS / 110.0;
-        double lonDelta = SEARCH_RADIUS / (110.0 * Math.cos(Math.toRadians(givenLatitude)));
-
-        double minLat = givenLatitude - latDelta;
-        double maxLat = givenLatitude + latDelta;
-        double minLon = givenLongitude - lonDelta;
-        double maxLon = givenLongitude + lonDelta;
-
-        return HOTEL.latitude.between(minLat, maxLat).and(
-                HOTEL.longitude.between(minLon, maxLon));
-    }
-
-    // 주어진 날짜 구간에 겹치는 예약이 없는 ROOM만 true
-    private BooleanExpression availableBetween(LocalDate checkIn, LocalDate checkOut) {
-        QReservationEntity reservationSub = new QReservationEntity("reservationSub");
-        QReservedRoomEntity reservedRoomSub = new QReservedRoomEntity("reservedRoomSub");
-
-        // 해당 ROOM에 대해 주어진 기간과 겹치는 총 예약수량을 구하는 SubQUery
-        JPQLQuery<Integer> reservedQty = JPAExpressions
-                .select(reservedRoomSub.quantity.sum().coalesce(0))
-                .from(reservedRoomSub)
-                .join(reservedRoomSub.reservation, reservationSub)
-                .where(reservedRoomSub.room.eq(ROOM),
-                        reservationSub.checkInDate.lt(checkOut),
-                        reservationSub.checkOutDate.gt(checkIn)
-                );
-
-        return ROOM.totalQuantity.gt(reservedQty);
-
-    }
-
-    private BooleanExpression numGuestGoe(Integer numGuest) {
-        return numGuest == null ? null : ROOM.maxOccupancy.goe(numGuest);
-    }
-
-    private BooleanExpression minPrice(Integer minPrice) {
-        return minPrice == null ? null : ROOM.price.goe(minPrice);
-    }
-
-    private BooleanExpression maxPrice(Integer maxPrice) {
-        return maxPrice == null ? null : ROOM.price.loe(maxPrice);
-    }
-
-    private BooleanExpression starLevelIn(List<Integer> numStars) {
-        if (ObjectUtils.isEmpty(numStars)) {
-            return null;
+        boolean hasStarFilter = !ObjectUtils.isEmpty(condition.numStar());
+        if (hasStarFilter) {
+            sql.append(" AND h.star_level IN (:numStars) ");
         }
-        return HOTEL.starLevel.in(numStars);
-    }
 
+        if (condition.numGuest() != null) {
+            sql.append(" AND r.max_occupancy >= :numGuest ");
+        }
+
+        if (condition.minPrice() != null) {
+            sql.append(" AND r.price >= :minPrice ");
+        }
+
+        if (condition.maxPrice() != null) {
+            sql.append(" AND r.price <= :maxPrice ");
+        }
+
+        sql.append("      ) " // EXISTS( 닫는 괄호
+                        + ") t " // FROM( 닫는 괄호
+                        + "WHERE t.dist <= :radius "
+                        + "ORDER BY t.dist ASC "
+                        + "LIMIT :limit OFFSET :offset"
+        );
+
+        Query query = entityManager.createNativeQuery(sql.toString())
+                .setParameter("lon", condition.longitude())
+                .setParameter("lat", condition.latitude())
+                .setParameter("minLat", minLat)
+                .setParameter("maxLat", maxLat)
+                .setParameter("minLon", minLon)
+                .setParameter("maxLon", maxLon)
+                .setParameter("radius", SEARCH_RADIUS_METERS)
+                .setParameter("checkIn", condition.checkIn())
+                .setParameter("checkOut", condition.checkOut())
+                .setParameter("limit", pageable.getPageSize() + 1L)
+                .setParameter("offset", pageable.getOffset());
+
+        if (hasStarFilter) {
+            query.setParameter("numStars", condition.numStar());
+        }
+
+        if (condition.numGuest() != null) {
+            query.setParameter("numGuest", condition.numGuest());
+        }
+
+        if (condition.minPrice() != null) {
+            query.setParameter("minPrice", condition.minPrice());
+        }
+
+        if (condition.maxPrice() != null) {
+            query.setParameter("maxPrice", condition.maxPrice());
+        }
+
+        @SuppressWarnings("unchecked")
+        List<Number> rows = query.getResultList();
+
+        return rows.stream()
+                .map(Number::intValue)
+                .toList();
+    }
 }

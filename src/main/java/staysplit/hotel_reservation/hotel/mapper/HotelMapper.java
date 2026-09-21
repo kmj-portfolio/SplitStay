@@ -12,6 +12,7 @@ import staysplit.hotel_reservation.room.domain.RoomEntity;
 import staysplit.hotel_reservation.room.repository.RoomRepository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Component
@@ -48,10 +49,10 @@ public class HotelMapper {
     }
 
     public GetHotelListResponse toListResponse(HotelEntity hotel) {
-        Optional<PhotoEntity> mainPhoto = hotel.getMainPhoto();
         List<RoomEntity> rooms = roomRepository.findByHotelId(hotel.getId());
 
-        String mainUrl = mainPhoto.isPresent() ? s3Service.getS3Url(mainPhoto.get().getStoredFileName()) : null;
+        //Optional<PhotoEntity> mainPhoto = hotel.getMainPhoto();
+        // String mainUrl = mainPhoto.isPresent() ? s3Service.getS3Url(mainPhoto.get().getStoredFileName()) : null;
 
         return new GetHotelListResponse(
                 hotel.getId(),
@@ -60,12 +61,25 @@ public class HotelMapper {
                 hotel.getStarLevel(),
                 hotel.getRating(),
                 hotel.getReviewCount(),
-                mainUrl,
+                null,
+                // mainUrl
                 rooms.stream()
                         .mapToInt(RoomEntity::getPrice)
                         .min()
                         .orElse(0)
+        );
+    }
 
+    public GetHotelListResponse toListResponse(HotelEntity hotel, Map<Integer, Integer> minPriceByHotelId) {
+        return new GetHotelListResponse(
+                hotel.getId(),
+                hotel.getName(),
+                hotel.getAddress(),
+                hotel.getStarLevel(),
+                hotel.getRating(),
+                hotel.getReviewCount(),
+                null,
+                minPriceByHotelId.getOrDefault(hotel.getId(), 0)
         );
     }
 

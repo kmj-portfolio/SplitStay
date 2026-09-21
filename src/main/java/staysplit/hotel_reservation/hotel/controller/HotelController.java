@@ -3,6 +3,7 @@ package staysplit.hotel_reservation.hotel.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
@@ -50,12 +51,12 @@ public class HotelController {
         return Response.success(response);
     }
 
-    //호텔 목록 조회
+    /*호텔 목록 조회
     @GetMapping("/list")
     public Response<Page<GetHotelListResponse>> getHotelList(@PageableDefault(size = 10) Pageable pageable) {
         Page<GetHotelListResponse> response = hotelService.getHotelList(pageable);
         return Response.success(response);
-    }
+    }*/
 
     //호텔 삭제
     @DeleteMapping("/{hotelId}")
@@ -76,8 +77,8 @@ public class HotelController {
 
     // 호텔 검색
     @PostMapping("/search")
-    public Response<Page<GetHotelListResponse>> searchHotels(@RequestBody HotelSearchCondition condition, Pageable pageable) {
-        Page<GetHotelListResponse> response = hotelSearchService.searchHotels(condition, pageable);
+    public Response<Slice<GetHotelListResponse>> searchHotels(@RequestBody HotelSearchCondition condition, Pageable pageable) {
+        Slice<GetHotelListResponse> response = hotelSearchService.searchHotels(condition, pageable);
         return Response.success(response);
     }
 }
