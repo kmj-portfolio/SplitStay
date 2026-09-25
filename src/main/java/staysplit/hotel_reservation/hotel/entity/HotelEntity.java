@@ -2,7 +2,10 @@ package staysplit.hotel_reservation.hotel.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
 import staysplit.hotel_reservation.hotel.dto.request.UpdateHotelRequest;
 import staysplit.hotel_reservation.photo.domain.PhotoEntity;
 import staysplit.hotel_reservation.provider.domain.entity.ProviderEntity;
@@ -16,6 +19,8 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class HotelEntity {
+    private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory(new PrecisionModel(), 4326);
+
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "hotel_id")
@@ -62,6 +67,12 @@ public class HotelEntity {
         this.latitude = request.latitude();
         this.description = request.description();
         this.starLevel = request.starLevel();
+    }
+
+    @PrePersist
+    @PreUpdate
+    private void syncLocation() {
+        this.location = GEOMETRY_FACTORY.createPoint(new Coordinate(longitude, latitude));
     }
 
     public void addPhoto(PhotoEntity photo) {

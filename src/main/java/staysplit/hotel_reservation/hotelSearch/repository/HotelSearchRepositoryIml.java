@@ -14,6 +14,7 @@ import staysplit.hotel_reservation.hotel.entity.QHotelEntity;
 import staysplit.hotel_reservation.hotelSearch.dto.request.HotelSearchCondition;
 
 import java.util.List;
+import java.util.Locale;
 
 @Repository
 @RequiredArgsConstructor
@@ -102,14 +103,19 @@ public class HotelSearchRepositoryIml implements HotelSearchRepository {
         double maxLat = condition.latitude() + latDelta;
         double minLon = condition.longitude() - lonDelta;
         double maxLon = condition.longitude() + lonDelta;
-        
+
+        // 공간 함수에 전달할 WKT 문자열 생성
+        // SRID 4326의 기본 축 순서는 (위도 경도)이므로, 'axis-order=long-lat' 옵션으로 (경도 위도) 순서임을 명시한다.
+        String centerPointWkt = String.format(Locale.US, "POINT(%f %f)", condition.longitude(), condition.latitude());
+        String searchAreaWkt = String.format(Locale.US, "POLYGON((%f %f, %f %f, %f %f, %f %f, %f %f))",
+                minLon, minLat, maxLon, minLat, maxLon, maxLat, minLon, maxLat, minLon, minLat);
+
         StringBuilder sql = new StringBuilder(
                 "SELECT t.hotel_id FROM ( "
                         + "    SELECT h.hotel_id, "
-                        + "           ST_Distance_Sphere(POINT(h.longitude, h.latitude), POINT(:lon, :lat)) AS dist "
+                        + "           ST_Distance_Sphere(h.location, ST_GeomFromText(:centerPoint, 4326, 'axis-order=long-lat')) AS dist "
                         + "    FROM hotel_entity h "
-                        + "    WHERE h.latitude BETWEEN :minLat AND :maxLat "
-                        + "      AND h.longitude BETWEEN :minLon AND :maxLon "
+                        + "    WHERE MBRContains(ST_GeomFromText(:searchArea, 4326, 'axis-order=long-lat'), h.location) "
         );
 
         sql.append(
@@ -151,12 +157,8 @@ public class HotelSearchRepositoryIml implements HotelSearchRepository {
         );
 
         Query query = entityManager.createNativeQuery(sql.toString())
-                .setParameter("lon", condition.longitude())
-                .setParameter("lat", condition.latitude())
-                .setParameter("minLat", minLat)
-                .setParameter("maxLat", maxLat)
-                .setParameter("minLon", minLon)
-                .setParameter("maxLon", maxLon)
+                .setParameter("centerPoint", centerPointWkt)
+                .setParameter("searchArea", searchAreaWkt)
                 .setParameter("radius", SEARCH_RADIUS_METERS)
                 .setParameter("checkIn", condition.checkIn())
                 .setParameter("checkOut", condition.checkOut())
