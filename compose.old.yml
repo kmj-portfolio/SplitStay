@@ -15,11 +15,10 @@ services:
       SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "false"
       GOOGLE_CLIENT_ID: dummy
       GOOGLE_CLIENT_SECRET: dummy
-      # 힙 900MB 고정 + 컨테이너 메모리 상한(호스트 2GB에서 OS/sshd/redis 몫 확보)
+      # 힙/메모리 제한은 비교 대상 서버와 같게 JVM 기본값 유지
       # OOM 발생 시 좀비로 남지 않도록 종료 후 재시작
-      JAVA_TOOL_OPTIONS: "-Duser.timezone=Asia/Seoul -Xmx900m -XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
+      JAVA_TOOL_OPTIONS: "-Duser.timezone=Asia/Seoul -XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
       TZ: "Asia/Seoul"
-    mem_limit: 1300m
     restart: unless-stopped
     depends_on:
       old-redis:
