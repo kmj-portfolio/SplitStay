@@ -15,9 +15,11 @@ services:
       SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "false"
       GOOGLE_CLIENT_ID: dummy
       GOOGLE_CLIENT_SECRET: dummy
-      # 힙을 호스트 RAM의 70%로 지정하고, OOM 발생 시 좀비로 남지 않도록 종료 후 재시작
-      JAVA_TOOL_OPTIONS: "-Duser.timezone=Asia/Seoul -XX:MaxRAMPercentage=70 -XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
+      # 힙 900MB 고정 + 컨테이너 메모리 상한(호스트 2GB에서 OS/sshd/redis 몫 확보)
+      # OOM 발생 시 좀비로 남지 않도록 종료 후 재시작
+      JAVA_TOOL_OPTIONS: "-Duser.timezone=Asia/Seoul -Xmx900m -XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
       TZ: "Asia/Seoul"
+    mem_limit: 1300m
     restart: unless-stopped
     depends_on:
       old-redis:
